@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Create match.py to request match info for a match">
+    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Create Utils.py for general methods. Convert puuids to game_names for Match details">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RiotAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RiotAccount.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/RiotAccount.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RiotAccount.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/riot_account.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/match.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/match.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,6 +52,7 @@
   "keyToString": {
     "Python.RiotAccount.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.match.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Shell Script.run.sh.executor": "Run",
     "git-widget-placeholder": "main"
@@ -88,12 +90,21 @@
       <option name="project" value="LOCAL" />
       <updated>1723575130661</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Create Utils.py for general methods. Convert puuids to game_names for Match details">
+      <option name="closed" value="true" />
+      <created>1723578056875</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1723578056875</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="Create match.py to request match info for a match" />
-    <option name="LAST_COMMIT_MESSAGE" value="Create match.py to request match info for a match" />
+    <MESSAGE value="Create Utils.py for general methods. Convert puuids to game_names for Match details" />
+    <option name="LAST_COMMIT_MESSAGE" value="Create Utils.py for general methods. Convert puuids to game_names for Match details" />
   </component>
 </project>

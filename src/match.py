@@ -1,4 +1,4 @@
-from Utils import Utils
+from utils import Utils
 
 
 class Match:
@@ -6,17 +6,18 @@ class Match:
         self.utils = Utils()
         self.match_id = match_id
         self.gamemode = None
+        self.duration = None
         self.puuids = []
         self.game_names = []
         self.bans = []
         self.picks = []
-        self.duration = None
-        self.get_match_details()
+        self.set_match_details()  # populate match details
+        self.get_bans()
 
     def __str__(self):
-        return f"ID: {self.match_id}, Duration: {self.duration}, Gamemode: {self.gamemode}, Players: {self.game_names}"
+        return f"Match ID: {self.match_id}\n Duration: {self.duration}\n Gamemode: {self.gamemode}\n Players: {self.game_names} \n Picks: {self.picks}"
 
-    def get_match_details(self):
+    def set_match_details(self):
         endpoint = f"/lol/match/v5/matches/{self.match_id}"
         match_info = self.utils.make_request(endpoint)
         info = match_info.get("info", {})
@@ -26,4 +27,12 @@ class Match:
         for puuid in self.puuids:
             name = self.utils.convert_puuid_to_game_name(puuid)
             self.game_names.append(name)
+        self.picks = [participant["championName"] for participant in info.get("participants")]
+
+    def get_bans(self):
+        endpoint = f"/lol/match/v5/matches/{self.match_id}"
+        match_info = self.utils.make_request(endpoint)
+        info = match_info.get("info", {})
+        team = info.get("teams", {})
+        self.bans = [ban["championId"] for ban in team.get("bans")]
 
