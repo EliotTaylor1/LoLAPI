@@ -1,8 +1,9 @@
 import json
+
 import requests
 
 
-class RiotAPI:
+class Utils:
     def __init__(self, api_key=None):
         if api_key:
             self.api_key = api_key
@@ -21,3 +22,9 @@ class RiotAPI:
             return response.json()
         else:
             raise Exception(f"Request failed with {response.status_code}: {response.text}")
+
+    def convert_puuid_to_game_name(self, puuid):
+        endpoint = f"/riot/account/v1/accounts/by-puuid/{puuid}"
+        account_info = self.make_request(endpoint)
+        game_name = f"{account_info.get('gameName')}#{account_info.get('tagLine')}"
+        return game_name
