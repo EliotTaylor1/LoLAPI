@@ -15,11 +15,15 @@ class Match:
         self.get_bans()
 
     def __str__(self):
-        return f"Match ID: {self.match_id}\n Duration: {self.duration}\n Gamemode: {self.gamemode}\n Players: {self.game_names} \n Picks: {self.picks}"
+        return (f"Match ID: {self.match_id}\n"
+                f"Duration: {self.duration}\n"
+                f"Gamemode: {self.gamemode}\n"
+                f"Players: {self.game_names}\n"
+                f"Picks: {self.picks}")
 
     def set_match_details(self):
         endpoint = f"/lol/match/v5/matches/{self.match_id}"
-        match_info = self.utils.make_request(endpoint)
+        match_info = self.utils.make_request_region(endpoint)
         info = match_info.get("info", {})
         self.gamemode = info.get("gameMode")
         self.duration = info.get("gameDuration")
@@ -31,8 +35,10 @@ class Match:
 
     def get_bans(self):
         endpoint = f"/lol/match/v5/matches/{self.match_id}"
-        match_info = self.utils.make_request(endpoint)
+        match_info = self.utils.make_request_region(endpoint)
         info = match_info.get("info", {})
-        team = info.get("teams", {})
-        self.bans = [ban["championId"] for ban in team.get("bans")]
-
+        teams = info.get("teams", [])
+        self.bans = []
+        for team in teams:
+            bans = team.get("bans", [])
+            self.bans.extend([ban["championId"] for ban in bans])
