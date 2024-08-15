@@ -1,22 +1,78 @@
 from riot_account import RiotAccount
 
-game_name = input("Enter ign: ")
-tagline = input("Enter tag: ")
-num_of_games_input = input("Enter number of games: ")
-num_of_games = int(num_of_games_input)
+name_valid = False
+while not name_valid:
+    name = input("Enter account name: ")
+    if len(name) < 3 or len(name) > 16:
+        print("Account name must be between 3 and 16 characters")
+    else:
+        name_valid = True
+
+tag_valid = False
+while not tag_valid:
+    tag = input("Enter tag: ")
+    if tag[0] == '#':
+        print("Tag should not start with #")
+    elif len(tag) < 2 or len(tag) > 5:
+        print("Tag must be between 2 - 5 characters")
+    elif not tag.isalnum():
+        print("Tag must only contain alphanumeric characters")
+    else:
+        tag_valid = True
+
+
+def print_main_menu():
+    print("\nAvailable actions")
+    print("1. Retrieve match history")
+    print("2. View match history")
+    print("3. Retrieve champion stats")
+    print("4. Exit")
+
+
+def print_match_history_menu():
+    print("Available actions")
+    print("1. Get match details")
+    print("2. View match history")
+    print("3. Exit")
+
+
+def handle_match_history_submenu(account):
+    while True:
+        print_match_history_menu()
+        choice = int(input("Enter action number: "))
+        if choice == 1:
+            print("Enter match number to view")
+            match_number = int(input("Match number: ")) - 1  # account for zero indexing
+            if match_number < 0 or match_number > len(account.get_match_history()):
+                print("Invalid match number")
+            else:
+                print(account.get_match_history()[match_number])
+        elif choice == 2:
+            account.print_match_history()
+        elif choice == 3:
+            break
+        else:
+            print("Invalid action chosen")
 
 
 def main():
-    if type(game_name) is not str:
-        raise TypeError(f"Name must be a string")
-    elif type(tagline) is not str:
-        raise TypeError(f"Tag must be a string")
-    elif type(num_of_games) is not int:
-        raise TypeError(f"Number of games must be int")
-    else:
-        account = RiotAccount(game_name, tagline, num_of_games)
-        print(account.get_matches())
-        print(account.get_matches()[0])
+    account = RiotAccount(name, tag)
+    print(account)
+    while True:
+        print_main_menu()
+        user_input = int(input("Enter action number: "))
+        if user_input == 1:
+            account.set_match_history_length()
+        elif user_input == 2:
+            account.print_match_history()
+            handle_match_history_submenu(account)
+        elif user_input == 3:
+            raise NotImplementedError("WIP")
+        elif user_input == 4:
+            break
+        else:
+            print("Invalid option chosen")
+    print("goodbye")
 
 
 try:

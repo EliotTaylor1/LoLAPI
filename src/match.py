@@ -17,9 +17,9 @@ class Match:
         return (f"Match ID: {self._match_id}\n"
                 f"Duration: {self._duration}\n"
                 f"Gamemode: {self._gamemode}\n"
-                f"Players: {self._participant_names}\n"
-                f"Picks: {self._picked_champions}\n"
-                f"Bans: {self._banned_champions}")
+                f"Players: {', '.join(self._participant_names)}\n"
+                f"Picks: {', '.join(self._picked_champions)}\n"
+                f"Bans: {', '.join(map(str, self._banned_champions))}")
 
     def _load_match_details(self):
         match_info = self._retrieve_match_info()

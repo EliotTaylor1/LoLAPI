@@ -4,9 +4,9 @@ from match import Match
 
 class RiotAccount:
 
-    def __init__(self, game_name, tagline, num_of_matches):
+    def __init__(self, game_name, tagline):
         self.utils = Utils()
-        self.match_history_length = num_of_matches
+        self._match_history_length = None
         self._game_name = game_name
         self._tagline = tagline
         self._puuid = None
@@ -19,7 +19,7 @@ class RiotAccount:
         self._wins = {}
         self._losses = {}
         self._winrates = {}
-        self._matches = []
+        self._match_history = []
         self._load_account_info()
 
     def __str__(self):
@@ -37,7 +37,6 @@ class RiotAccount:
         self._set_account_puuid()
         self._set_account_info()
         self._set_ranked_info()
-        self._set_match_history(self.match_history_length)
 
     def _set_account_puuid(self):
         endpoint = f"/riot/account/v1/accounts/by-riot-id/{self._game_name}/{self._tagline}"
@@ -70,12 +69,27 @@ class RiotAccount:
         self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
         self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
 
-    def _set_match_history(self, num_of_matches):
+    def set_match_history_length(self):
+        if self._match_history_length is not None:
+            print("Match history length already set")
+            return
+        num_of_games_valid = False
+        while not num_of_games_valid:
+            num_of_games_input = input("Enter number of games: ")
+            num_of_games = int(num_of_games_input)
+            if num_of_games < 1 or num_of_games > 100:
+                print("Number of games must be between 1 - 100")
+            else:
+                self._match_history_length = num_of_games
+                self._retrieve_match_history(self._match_history_length)
+                num_of_games_valid = True
+
+    def _retrieve_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
         for match_id in match_ids:
             match = Match(match_id)
-            self._matches.append(match)
+            self._match_history.append(match)
 
     def get_account_puuid(self):
         return self._puuid
@@ -107,5 +121,13 @@ class RiotAccount:
     def get_winrates(self):
         return self._winrates
 
-    def get_matches(self):
-        return self._matches
+    def get_match_history(self):
+        return self._match_history
+
+    def print_match_history(self):
+        i = 1
+        for match in self._match_history:
+            print(f"====== Match {i}. ======")
+            print(f"{match}")
+            print("=========================\n")
+            i += 1

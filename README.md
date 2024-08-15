@@ -5,25 +5,27 @@ LoLAPI is a CLI tool written in Python that allows you to look-up stats for a Le
 *This project is currently WIP. See roadmap below.*
 ## How to run
 ### Linux / MacOS
-1. Clone this repo
+1. Clone this repo `https://github.com/EliotTaylor1/LoLAPI-CLI.git`
 2. Open `config.json`
 3. Insert your riot API key
 4. Insert the region and server of the player you want to search
 5. run `run.sh`
-6. Enter player name and tag *(e.g. Name: Eiiot Tag: EUW)*
 ### Windows - Coming soon
 
 ## Roadmap
-1. Retrieve match history and stats for a match
-2. Retrieve account champion stats
-3. Support Windows
-4. Remove need for region and server setting in config.json
-5. Allow lookup of another account without needing to restart
-6. UI
+1. Retrieve account champion stats
+2. Support Windows
+3. Remove need for region and server setting in config.json
+4. Allow lookup of another account without needing to restart
+5. UI
 
 ## FAQ
 ### Q: Where do I get a Riot API key?
 A: Go to https://developer.riotgames.com/ and login with a riot account
+### Q: What is a 'Name' and a 'Tag'
+A: A 'Name' is the player's name. A 'Tag' is the characters after the #.
+
+*For example: Eiiot#EUW*
 ### Q: What are regions?
 A: Regions are clusters of servers. For example the 'europe' region covers EUW and EUNE
 ### Q: What are servers?
