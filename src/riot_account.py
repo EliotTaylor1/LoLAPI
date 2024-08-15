@@ -35,15 +35,8 @@ class RiotAccount:
 
     def _load_account_info(self):
         self._set_account_puuid()
-        self._set_account_level()
-        self._set_account_id()
-        self._set_summoner_id()
-        self._set_tiers()
-        self._set_ranks()
-        self._set_league_points()
-        self._set_wins()
-        self._set_losses()
-        self._set_winrates()
+        self._set_account_info()
+        self._set_ranked_info()
         self._set_match_history(self.match_history_length)
 
     def _set_account_puuid(self):
@@ -51,67 +44,29 @@ class RiotAccount:
         account_info = self.utils.make_request_region(endpoint)
         self._puuid = account_info.get("puuid")
 
-    def _set_account_level(self):
+    def _set_account_info(self):
         endpoint = f"/lol/summoner/v4/summoners/by-puuid/{self._puuid}"
         account_info = self.utils.make_request_server(endpoint)
         self._account_level = account_info.get("summonerLevel")
-
-    def _set_account_id(self):
-        endpoint = f"/lol/summoner/v4/summoners/by-puuid/{self._puuid}"
-        account_info = self.utils.make_request_server(endpoint)
         self._account_id = account_info.get("accountId")
-
-    def _set_summoner_id(self):
-        endpoint = f"/lol/summoner/v4/summoners/by-puuid/{self._puuid}"
-        account_info = self.utils.make_request_server(endpoint)
         self._summoner_id = account_info.get("id")
 
-    def _set_tiers(self):
+    def _set_ranked_info(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
                 self._tiers["Solo"] = queue["tier"]
-            elif queue["queueType"] == "RANKED_FLEX_SR":
-                self._tiers["Flex"] = queue["tier"]
-
-    def _set_ranks(self):
-        endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
-        account_info = self.utils.make_request_server(endpoint)
-        for queue in account_info:
-            if queue["queueType"] == "RANKED_SOLO_5x5":
                 self._ranks["Solo"] = queue["rank"]
-            elif queue["queueType"] == "RANKED_FLEX_SR":
-                self._ranks["Flex"] = queue["rank"]
-
-    def _set_league_points(self):
-        endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
-        account_info = self.utils.make_request_server(endpoint)
-        for queue in account_info:
-            if queue["queueType"] == "RANKED_SOLO_5x5":
                 self._league_points["Solo"] = queue["leaguePoints"]
-            elif queue["queueType"] == "RANKED_FLEX_SR":
-                self._league_points["Flex"] = queue["leaguePoints"]
-
-    def _set_wins(self):
-        endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
-        account_info = self.utils.make_request_server(endpoint)
-        for queue in account_info:
-            if queue["queueType"] == "RANKED_SOLO_5x5":
                 self._wins["Solo"] = queue["wins"]
-            elif queue["queueType"] == "RANKED_FLEX_SR":
-                self._wins["Flex"] = queue["wins"]
-
-    def _set_losses(self):
-        endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
-        account_info = self.utils.make_request_server(endpoint)
-        for queue in account_info:
-            if queue["queueType"] == "RANKED_SOLO_5x5":
                 self._losses["Solo"] = queue["losses"]
             elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._tiers["Flex"] = queue["tier"]
+                self._ranks["Flex"] = queue["rank"]
+                self._league_points["Flex"] = queue["leaguePoints"]
+                self._wins["Flex"] = queue["wins"]
                 self._losses["Flex"] = queue["losses"]
-
-    def _set_winrates(self):
         self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
         self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
 

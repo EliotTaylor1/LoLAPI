@@ -1,5 +1,4 @@
 from riot_account import RiotAccount
-from match import Match
 
 game_name = input("Enter ign: ")
 tagline = input("Enter tag: ")

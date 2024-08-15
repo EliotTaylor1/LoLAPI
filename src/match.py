@@ -22,53 +22,46 @@ class Match:
                 f"Bans: {self._banned_champions}")
 
     def _load_match_details(self):
-        self._set_gamemode()
-        self._set_duration()
-        self._set_participant_puuids()
-        self._set_participant_names()
-        self._set_banned_champions()
-        self._set_picked_champions()
+        match_info = self._retrieve_match_info()
+        self._set_match_info(match_info)
+        self._set_participant_puuids(match_info)
+        self._set_participant_names(match_info)
+        self._set_banned_champions(match_info)
+        self._set_picked_champions(match_info)
 
-    def _set_gamemode(self):
+    def _retrieve_match_info(self):
         endpoint = f"/lol/match/v5/matches/{self._match_id}"
-        match_info = self.utils.make_request_region(endpoint)
+        return self.utils.make_request_region(endpoint)
+
+    def _set_match_info(self, match_info):
         info = match_info.get("info", {})
         self._gamemode = info.get("gameMode")
-
-    def _set_duration(self):
-        endpoint = f"/lol/match/v5/matches/{self._match_id}"
-        match_info = self.utils.make_request_region(endpoint)
-        info = match_info.get("info", {})
         self._duration = info.get("gameDuration")
 
-    def _set_participant_puuids(self):
-        endpoint = f"/lol/match/v5/matches/{self._match_id}"
-        match_info = self.utils.make_request_region(endpoint)
+    def _set_participant_puuids(self, match_info):
         info = match_info.get("metadata", {})
         self._participant_puuids = info.get("participants")
 
-    def _set_participant_names(self):
-        for participant in self._participant_puuids:
-            game_name = self.utils.convert_puuid_to_game_name(participant)
-            self._participant_names.append(game_name)
+    def _set_participant_names(self, match_info):
+        info = match_info.get("info", {})
+        participants = info.get("participants", [])
+        for participant in participants:
+            name = participant.get("riotIdGameName")
+            tag = participant.get("riotIdTagline")
+            final = f"{name}#{tag}"
+            self._participant_names.append(final)
 
-    def _set_picked_champions(self):
-        endpoint = f"/lol/match/v5/matches/{self._match_id}"
-        match_info = self.utils.make_request_region(endpoint)
+    def _set_picked_champions(self, match_info):
         info = match_info.get("info", {})
         participants = info.get("participants", [])
         for participant in participants:
             pick = participant.get("championName")
             self._picked_champions.append(pick)
 
-    def _set_banned_champions(self):
-        endpoint = f"/lol/match/v5/matches/{self._match_id}"
-        match_info = self.utils.make_request_region(endpoint)
+    def _set_banned_champions(self, match_info):
         info = match_info.get("info", {})
         teams = info.get("teams", [])
         for team in teams:
             bans = team.get("bans")
             for ban in bans:
                 self._banned_champions.append(ban.get("championId"))
-
-
