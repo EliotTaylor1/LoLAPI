@@ -33,7 +33,7 @@ def print_match_history_menu():
     print("Available actions")
     print("1. Get match details")
     print("2. View match history")
-    print("3. Exit")
+    print("3. Return to main menu")
 
 
 def handle_match_history_submenu(account):
@@ -46,7 +46,9 @@ def handle_match_history_submenu(account):
             if match_number < 0 or match_number > len(account.get_match_history()):
                 print("Invalid match number")
             else:
+                print("\n====== Match details ======")
                 print(account.get_match_history()[match_number])
+                print("===========================\n")
         elif choice == 2:
             account.print_match_history()
         elif choice == 3:
@@ -57,7 +59,7 @@ def handle_match_history_submenu(account):
 
 def main():
     account = RiotAccount(name, tag)
-    print(account)
+    print(f"\n{account}")
     while True:
         print_main_menu()
         user_input = int(input("Enter action number: "))
