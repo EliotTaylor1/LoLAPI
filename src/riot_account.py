@@ -1,10 +1,12 @@
 from utils import Utils
+from match import Match
 
 
 class RiotAccount:
 
-    def __init__(self, game_name, tagline):
+    def __init__(self, game_name, tagline, num_of_matches):
         self.utils = Utils()
+        self.match_history_length = num_of_matches
         self._game_name = game_name
         self._tagline = tagline
         self._puuid = None
@@ -13,12 +15,12 @@ class RiotAccount:
         self._account_level = None
         self._tiers = {}
         self._ranks = {}
-        self._lps = {}
+        self._league_points = {}
         self._wins = {}
         self._losses = {}
-        self._wrs = {}
-        self.load_account_info()
+        self._winrates = {}
         self._matches = []
+        self._load_account_info()
 
     def __str__(self):
         return (f"Name: {self._game_name}#{self._tagline}\n"
@@ -26,22 +28,23 @@ class RiotAccount:
                 f"Summoner ID: {self._summoner_id}\n"
                 f"Account ID: {self._account_id}\n"
                 f"Level: {self._account_level}\n"
-                f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._lps.get('Solo')}LP\n"
-                f"Solo Q W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._wrs.get('Solo'):.2f}%\n"
-                f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._lps.get('Flex')}LP\n"
-                f"Flex Q W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._wrs.get('Flex'):.2f}%\n")
+                f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP\n"
+                f"Solo Q W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
+                f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP\n"
+                f"Flex Q W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n")
 
-    def load_account_info(self):
+    def _load_account_info(self):
         self._set_account_puuid()
         self._set_account_level()
         self._set_account_id()
         self._set_summoner_id()
         self._set_tiers()
         self._set_ranks()
-        self._set_lps()
+        self._set_league_points()
         self._set_wins()
         self._set_losses()
-        self._set_wrs()
+        self._set_winrates()
+        self._set_match_history(self.match_history_length)
 
     def _set_account_puuid(self):
         endpoint = f"/riot/account/v1/accounts/by-riot-id/{self._game_name}/{self._tagline}"
@@ -81,14 +84,14 @@ class RiotAccount:
             elif queue["queueType"] == "RANKED_FLEX_SR":
                 self._ranks["Flex"] = queue["rank"]
 
-    def _set_lps(self):
+    def _set_league_points(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._lps["Solo"] = queue["leaguePoints"]
+                self._league_points["Solo"] = queue["leaguePoints"]
             elif queue["queueType"] == "RANKED_FLEX_SR":
-                self._lps["Flex"] = queue["leaguePoints"]
+                self._league_points["Flex"] = queue["leaguePoints"]
 
     def _set_wins(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
@@ -108,13 +111,16 @@ class RiotAccount:
             elif queue["queueType"] == "RANKED_FLEX_SR":
                 self._losses["Flex"] = queue["losses"]
 
-    def _set_wrs(self):
-        self._wrs["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
-        self._wrs["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+    def _set_winrates(self):
+        self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+        self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
 
     def _set_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
-        self._matches = self.utils.make_request_region(endpoint)
+        match_ids = self.utils.make_request_region(endpoint)
+        for match_id in match_ids:
+            match = Match(match_id)
+            self._matches.append(match)
 
     def get_account_puuid(self):
         return self._puuid
@@ -134,8 +140,8 @@ class RiotAccount:
     def get_ranks(self):
         return self._ranks
 
-    def get_lps(self):
-        return self._lps
+    def get_league_points(self):
+        return self._league_points
 
     def get_wins(self):
         return self._wins
@@ -143,5 +149,8 @@ class RiotAccount:
     def get_losses(self):
         return self._losses
 
-    def get_solo_wr(self):
-        return self._wrs
+    def get_winrates(self):
+        return self._winrates
+
+    def get_matches(self):
+        return self._matches

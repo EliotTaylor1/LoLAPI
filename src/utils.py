@@ -10,7 +10,7 @@ class Utils:
             self.region = region
             self.server = server
         else:
-            with open("config.json") as f:
+            with open("../config.json") as f:
                 config = json.load(f)
             self.api_key = config.get("api_key")
             self.region = config.get("region")
@@ -18,6 +18,7 @@ class Utils:
 
     def make_request_region(self, endpoint):
         url = f"https://{self.region}.api.riotgames.com{endpoint}"
+        print(f"making request to: {url}")
         headers = {
             "X-Riot-Token": self.api_key
         }
@@ -29,6 +30,7 @@ class Utils:
 
     def make_request_server(self, endpoint):
         url = f"https://{self.server}.api.riotgames.com{endpoint}"
+        print(f"making request to: {url}")
         headers = {
             "X-Riot-Token": self.api_key
         }
