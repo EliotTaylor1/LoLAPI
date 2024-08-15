@@ -11,12 +11,12 @@ class RiotAccount:
         self._account_id = None
         self._summoner_id = None
         self._account_level = None
-        self._solo_tier = None
-        self._solo_rank = None
-        self._solo_lp = None
-        self._solo_wins = None
-        self._solo_losses = None
-        self._solo_wr = 0.00
+        self._tiers = {}
+        self._ranks = {}
+        self._lps = {}
+        self._wins = {}
+        self._losses = {}
+        self._wrs = {}
         self.load_account_info()
         self._matches = []
 
@@ -26,20 +26,22 @@ class RiotAccount:
                 f"Summoner ID: {self._summoner_id}\n"
                 f"Account ID: {self._account_id}\n"
                 f"Level: {self._account_level}\n"
-                f"Solo Q Rank: {self._solo_tier} {self._solo_rank} {self._solo_lp}LP\n"
-                f"Solo Q W/L: {self._solo_wins}/{self._solo_losses} - {self._solo_wr:.2f}%\n")
+                f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._lps.get('Solo')}LP\n"
+                f"Solo Q W/L: {self._wins.get('Solo')}/{self._losses.get('Solo')} - {self._wrs.get('Solo'):.2f}%\n"
+                f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._lps.get('Flex')}LP\n"
+                f"Flex Q W/L: {self._wins.get('Flex')}/{self._losses.get('Flex')} - {self._wrs.get('Flex'):.2f}%\n")
 
     def load_account_info(self):
         self._set_account_puuid()
         self._set_account_level()
         self._set_account_id()
         self._set_summoner_id()
-        self._set_solo_tier()
-        self._set_solo_rank()
-        self._set_solo_lp()
-        self._set_solo_wins()
-        self._set_solo_losses()
-        self._set_solo_wr()
+        self._set_tiers()
+        self._set_ranks()
+        self._set_lps()
+        self._set_wins()
+        self._set_losses()
+        self._set_wrs()
 
     def _set_account_puuid(self):
         endpoint = f"/riot/account/v1/accounts/by-riot-id/{self._game_name}/{self._tagline}"
@@ -61,48 +63,54 @@ class RiotAccount:
         account_info = self.utils.make_request_server(endpoint)
         self._summoner_id = account_info.get("id")
 
-    def _set_solo_tier(self):
+    def _set_tiers(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._solo_tier = queue["tier"]
-                break
+                self._tiers["Solo"] = queue["tier"]
+            elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._tiers["Flex"] = queue["tier"]
 
-    def _set_solo_rank(self):
+    def _set_ranks(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._solo_rank = queue["rank"]
-                break
+                self._ranks["Solo"] = queue["rank"]
+            elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._ranks["Flex"] = queue["rank"]
 
-    def _set_solo_lp(self):
+    def _set_lps(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._solo_lp = queue["leaguePoints"]
-                break
+                self._lps["Solo"] = queue["leaguePoints"]
+            elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._lps["Flex"] = queue["leaguePoints"]
 
-    def _set_solo_wins(self):
+    def _set_wins(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._solo_wins = queue["wins"]
-                break
+                self._wins["Solo"] = queue["wins"]
+            elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._wins["Flex"] = queue["wins"]
 
-    def _set_solo_losses(self):
+    def _set_losses(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
         account_info = self.utils.make_request_server(endpoint)
         for queue in account_info:
             if queue["queueType"] == "RANKED_SOLO_5x5":
-                self._solo_losses = queue["losses"]
-                break
+                self._losses["Solo"] = queue["losses"]
+            elif queue["queueType"] == "RANKED_FLEX_SR":
+                self._losses["Flex"] = queue["losses"]
 
-    def _set_solo_wr(self):
-        self._solo_wr = (self._solo_wins / (self._solo_wins + self._solo_losses)) * 100
+    def _set_wrs(self):
+        self._wrs["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+        self._wrs["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
 
     def _set_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
@@ -120,20 +128,20 @@ class RiotAccount:
     def get_summoner_id(self):
         return self._summoner_id
 
-    def get_solo_tier(self):
-        return self._solo_tier
+    def get_tiers(self):
+        return self._tiers
 
-    def get_solo_rank(self):
-        return self._solo_rank
+    def get_ranks(self):
+        return self._ranks
 
-    def get_solo_lp(self):
-        return self._solo_lp
+    def get_lps(self):
+        return self._lps
 
-    def get_solo_wins(self):
-        return self._solo_wins
+    def get_wins(self):
+        return self._wins
 
-    def get_solo_losses(self):
-        return self._solo_losses
+    def get_losses(self):
+        return self._losses
 
     def get_solo_wr(self):
-        return self._solo_wr
+        return self._wrs

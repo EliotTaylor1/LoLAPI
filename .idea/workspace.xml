@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Allow user to input player&#10;Get champion and ban info for a match">
+    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Pull additional account information.&#10;Refactor riot_account class&#10;Set region and server in config.json">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/match.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/match.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/riot_account.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/riot_account.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +48,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.RiotAccount.executor": "Run",
-    "Python.main.executor": "Run",
+    "Python.main.executor": "Debug",
     "Python.match.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Shell Script.run.sh.executor": "Run",
@@ -106,7 +103,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723585496823</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Pull additional account information.&#10;Refactor riot_account class&#10;Set region and server in config.json">
+      <option name="closed" value="true" />
+      <created>1723672762497</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1723672762497</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -114,6 +119,7 @@
     <MESSAGE value="Create match.py to request match info for a match" />
     <MESSAGE value="Create Utils.py for general methods. Convert puuids to game_names for Match details" />
     <MESSAGE value="Allow user to input player&#10;Get champion and ban info for a match" />
-    <option name="LAST_COMMIT_MESSAGE" value="Allow user to input player&#10;Get champion and ban info for a match" />
+    <MESSAGE value="Pull additional account information.&#10;Refactor riot_account class&#10;Set region and server in config.json" />
+    <option name="LAST_COMMIT_MESSAGE" value="Pull additional account information.&#10;Refactor riot_account class&#10;Set region and server in config.json" />
   </component>
 </project>
