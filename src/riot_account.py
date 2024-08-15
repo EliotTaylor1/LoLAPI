@@ -27,9 +27,9 @@ class RiotAccount:
                 f"Account ID: {self._account_id}\n"
                 f"Level: {self._account_level}\n"
                 f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._lps.get('Solo')}LP\n"
-                f"Solo Q W/L: {self._wins.get('Solo')}/{self._losses.get('Solo')} - {self._wrs.get('Solo'):.2f}%\n"
+                f"Solo Q W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._wrs.get('Solo'):.2f}%\n"
                 f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._lps.get('Flex')}LP\n"
-                f"Flex Q W/L: {self._wins.get('Flex')}/{self._losses.get('Flex')} - {self._wrs.get('Flex'):.2f}%\n")
+                f"Flex Q W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._wrs.get('Flex'):.2f}%\n")
 
     def load_account_info(self):
         self._set_account_puuid()
