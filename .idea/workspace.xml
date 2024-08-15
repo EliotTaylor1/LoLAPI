@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Tidy up W/L printing">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="3309f069-59f4-468d-a138-705a4bc0d705" name="Changes" comment="Add README.md">
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -127,7 +125,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723720796134</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add README.md">
+      <option name="closed" value="true" />
+      <created>1723722004591</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1723722004591</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -138,6 +144,7 @@
     <MESSAGE value="Pull additional account information.&#10;Refactor riot_account class&#10;Set region and server in config.json" />
     <MESSAGE value="Store ranked info as dicts to cope with multiple queue types more elegantly" />
     <MESSAGE value="Tidy up W/L printing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Tidy up W/L printing" />
+    <MESSAGE value="Add README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add README.md" />
   </component>
 </project>
