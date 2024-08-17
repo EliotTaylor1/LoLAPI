@@ -13,6 +13,7 @@ class RiotAccount:
         self._account_id = None
         self._summoner_id = None
         self._account_level = None
+        self._overall_champion_mastery = None
         self._tiers = {}
         self._ranks = {}
         self._league_points = {}
@@ -28,6 +29,7 @@ class RiotAccount:
                 f"Summoner ID: {self._summoner_id}\n"
                 f"Account ID: {self._account_id}\n"
                 f"Level: {self._account_level}\n"
+                f"Mastery Level {self._overall_champion_mastery}\n"
                 f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP\n"
                 f"Solo Q W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
                 f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP\n"
@@ -84,6 +86,11 @@ class RiotAccount:
                 self._retrieve_match_history(self._match_history_length)
                 num_of_games_valid = True
 
+    def set_champion_mastery(self):
+        endpoint = f"/lol/champion-mastery/v4/scores/by-puuid/{self._puuid}"
+        mastery = self.utils.make_request_server(endpoint)
+        self._overall_champion_mastery = mastery
+
     def _retrieve_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
@@ -102,6 +109,9 @@ class RiotAccount:
 
     def get_summoner_id(self):
         return self._summoner_id
+
+    def get_overall_mastery_level(self):
+        return self._overall_champion_mastery
 
     def get_tiers(self):
         return self._tiers
