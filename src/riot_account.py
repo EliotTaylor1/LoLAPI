@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from utils import Utils
 from match import Match
 
@@ -12,6 +14,8 @@ class RiotAccount:
         self._puuid = None
         self._account_id = None
         self._summoner_id = None
+        self._date_of_last_activity = None
+        self._date_of_last_match = None
         self._account_level = None
         self._overall_champion_mastery = None
         self._tiers = {}
@@ -29,16 +33,26 @@ class RiotAccount:
                 f"Summoner ID: {self._summoner_id}\n"
                 f"Account ID: {self._account_id}\n"
                 f"Level: {self._account_level}\n"
-                f"Mastery Level {self._overall_champion_mastery}\n"
-                f"Solo Q Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP\n"
-                f"Solo Q W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
-                f"Flex Q Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP\n"
-                f"Flex Q W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n")
+                f"Mastery Level: {self._overall_champion_mastery}\n"
+                f"Last profile activity: {self._date_of_last_activity}\n"
+                f"Last match: {self._date_of_last_match}\n"
+                f"Solo Q - Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP || "
+                f"W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
+                f"Flex Q - Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP || "
+                f"W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n"
+                f"Arena - W/L: {self._wins.get('Arena')}W/{self._losses.get('Arena')}L - {self._winrates.get('Arena'):.2f}%\n")
 
     def _load_account_info(self):
+        print("Setting PUUID")
         self._set_account_puuid()
+        print("Setting Account info")
         self._set_account_info()
+        print("Setting Ranked Info")
         self._set_ranked_info()
+        print("Setting Overall mastery")
+        self._set_overall_champion_mastery()
+        print("Setting Date of last match")
+        self._set_date_of_last_match()
 
     def _set_account_puuid(self):
         endpoint = f"/riot/account/v1/accounts/by-riot-id/{self._game_name}/{self._tagline}"
@@ -48,9 +62,15 @@ class RiotAccount:
     def _set_account_info(self):
         endpoint = f"/lol/summoner/v4/summoners/by-puuid/{self._puuid}"
         account_info = self.utils.make_request_server(endpoint)
+        print("Setting Summoner level")
         self._account_level = account_info.get("summonerLevel")
+        print("Setting Account ID")
         self._account_id = account_info.get("accountId")
+        print("Setting Summoner ID")
         self._summoner_id = account_info.get("id")
+        print("Setting Last revision date")
+        revision_date = account_info.get("revisionDate") / 1000  # format posix date correctly
+        self._date_of_last_activity = datetime.fromtimestamp(revision_date)
 
     def _set_ranked_info(self):
         endpoint = f"/lol/league/v4/entries/by-summoner/{self._summoner_id}"
@@ -68,8 +88,13 @@ class RiotAccount:
                 self._league_points["Flex"] = queue["leaguePoints"]
                 self._wins["Flex"] = queue["wins"]
                 self._losses["Flex"] = queue["losses"]
+            elif queue["queueType"] == "CHERRY":
+                self._league_points["Arena"] = queue["leaguePoints"]
+                self._wins["Arena"] = queue["wins"]
+                self._losses["Arena"] = queue["losses"]
         self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
         self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+        self._winrates["Arena"] = (self._wins.get('Arena') / (self._wins.get('Arena') + self._losses.get('Arena'))) * 100
 
     def set_match_history_length(self):
         if self._match_history_length is not None:
@@ -86,7 +111,7 @@ class RiotAccount:
                 self._retrieve_match_history(self._match_history_length)
                 num_of_games_valid = True
 
-    def set_champion_mastery(self):
+    def _set_overall_champion_mastery(self):
         endpoint = f"/lol/champion-mastery/v4/scores/by-puuid/{self._puuid}"
         mastery = self.utils.make_request_server(endpoint)
         self._overall_champion_mastery = mastery
@@ -97,6 +122,18 @@ class RiotAccount:
         for match_id in match_ids:
             match = Match(match_id)
             self._match_history.append(match)
+
+    def _set_date_of_last_match(self):
+        endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count=1"
+        match_ids = self.utils.make_request_region(endpoint)
+        if not match_ids:
+            raise Exception("No recent matches found")
+        match_id = match_ids[0]
+        match_info_endpoint = f"/lol/match/v5/matches/{match_id}"
+        match_info = self.utils.make_request_region(match_info_endpoint)
+        info = match_info.get("info")
+        last_match = info.get("gameCreation") / 1000  # format POSIX date correctly
+        self._date_of_last_match = datetime.fromtimestamp(last_match)
 
     def get_account_puuid(self):
         return self._puuid
