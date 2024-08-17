@@ -23,7 +23,7 @@ while not tag_valid:
 
 def print_main_menu():
     print("\nAvailable actions")
-    print("1. Retrieve match history")
+    print("1. View profile information")
     print("2. View match history")
     print("3. Retrieve champion stats")
     print("4. Exit")
@@ -58,14 +58,13 @@ def handle_match_history_submenu(account):
 
 def main():
     account = RiotAccount(name, tag)
-    print(f"\n{account}")
     while True:
         print_main_menu()
         user_input = int(input("Enter action number: "))
         if user_input == 1:
-            account.set_match_history_length()
+            print(f"\n{account}")
         elif user_input == 2:
-            account.print_match_history()
+            account.set_match_history_length()
             handle_match_history_submenu(account)
         elif user_input == 3:
             raise NotImplementedError("WIP")
