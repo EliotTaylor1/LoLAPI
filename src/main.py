@@ -48,7 +48,6 @@ def handle_match_history_submenu(account):
             else:
                 print("\n====== Match details ======")
                 account.get_match_history()[match_number].print_detailed_match_stats()
-                print("===========================\n")
         elif choice == 2:
             account.print_match_history()
         elif choice == 3:
