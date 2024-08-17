@@ -47,7 +47,7 @@ def handle_match_history_submenu(account):
                 print("Invalid match number")
             else:
                 print("\n====== Match details ======")
-                print(account.get_match_history()[match_number])
+                account.get_match_history()[match_number].print_detailed_match_stats()
                 print("===========================\n")
         elif choice == 2:
             account.print_match_history()
