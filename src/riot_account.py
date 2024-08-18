@@ -94,15 +94,21 @@ class RiotAccount:
                 self._league_points["Arena"] = queue["leaguePoints"]
                 self._wins["Arena"] = queue["wins"]
                 self._losses["Arena"] = queue["losses"]
-        if "Solo" in self._wins:
-            self._winrates["Solo"] = (self._wins.get('Solo') / (
-                    self._wins.get('Solo') + self._losses.get('Solo'))) * 100
-        if "Flex" in self._wins:
-            self._winrates["Flex"] = (self._wins.get('Flex') / (
-                    self._wins.get('Flex') + self._losses.get('Flex'))) * 100
-        if "Arena" in self._wins:
-            self._winrates["Arena"] = (self._wins.get('Arena') / (
-                    self._wins.get('Arena') + self._losses.get('Arena'))) * 100
+        # check if the account has played a game of this queue type before we calculate the winrate.
+        # then check if they have won a game in that queue type to avoid divide by 0.
+        # if they haven't won a game just set winrate to 0.
+        if "Solo" in self._wins and self._wins["Solo"] > 0:
+            self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+        else:
+            self._winrates["Solo"] = 0
+        if "Flex" in self._wins and self._wins["Flex"] > 0:
+            self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+        else:
+            self._winrates["Flex"] = 0
+        if "Arena" in self._wins and self._wins["Arena"] > 0:
+            self._winrates["Arena"] = (self._wins.get('Arena') / (self._wins.get('Arena') + self._losses.get('Arena'))) * 100
+        else:
+            self._winrates["Arena"] = 0
 
     def set_match_history_length(self):
         if self._match_history_length is not None:
