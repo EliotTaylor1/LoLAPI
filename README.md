@@ -5,16 +5,17 @@ LoLAPI-CLI is a CLI tool written in Python that allows you to look-up stats for 
 *This project is currently WIP. See roadmap below.*
 ## How to run
 1. Install Python3
+   `https://www.python.org/downloads/`
 2. Clone this repo `git clone https://github.com/EliotTaylor1/LoLAPI-CLI.git`
 3. Open `config.json`
 4. Insert your riot API key
 5. Insert the region and server of the player you want to search
 6. run either `run.bat` (Windows) or `run.sh` (Unix)
-
+    *The script will create a venv in the directory you're running in*
 ## Roadmap
 1. Remove need for region and server setting in config.json
-3. Debug / verbose mode
-4. UI
+2. Debug / verbose mode
+3. UI???
 
 ## FAQ
 ### Q: Where do I get a Riot API key?
