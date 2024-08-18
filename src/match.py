@@ -167,18 +167,34 @@ class Match:
             return "Arena"
 
     def print_detailed_match_stats(self):
+        name_width = 30
+        team_width = 8
+        champ_width = 15
+        kda_width = 8
+        role_width = 10
+        gold_width = 10
+
         print(f"Match Date: {self._match_date}\n"
-              f"Winning team: {self.get_winning_team()} | "
-              f"Game length: {self.print_duration()}\n"
-              f"Blue team gold: {self.get_team_gold().get(100)}\n"
-              f"Red team gold: {self.get_team_gold().get(200)}\n"
-              f"================")
+              f"Winning Team: {self.get_winning_team()} || Game Length: {self.print_duration()}\n"
+              f"Blue Team Gold: {self.get_team_gold().get(100)}\n"
+              f"Red Team Gold: {self.get_team_gold().get(200)}\n")
+        print("=" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
+
         sorted_participants = sorted(self._participants, key=lambda p: p.get_teamId())
+
+        # Print header for participant stats
+        print(f"{'Player':<{name_width}} | {'Team':<{team_width}} | {'Champion':<{champ_width}} | "
+              f"{'KDA':<{kda_width}} | {'Role':<{role_width}} | {'Gold':<{gold_width}}")
+        print("=" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
+
         for participant in sorted_participants:
-            print(f"Player: {participant.get_full_name()}\n"
-                  f"Team: {participant.get_team_colour()}\n"
-                  f"Champion: {participant.get_champion()} - "
-                  f"KDA: {participant.get_kills()}/{participant.get_deaths()}/{participant.get_assists()}\n"
-                  f"Role: {participant.get_role()}\n"
-                  f"Gold: {participant.get_gold()}")
-            print("================")
+            #  'kda' string needed to fix formatting alignment issues... (an hour wasted)
+            kda = f"{participant.get_kills()}/{participant.get_deaths()}/{participant.get_assists()}"
+            print(f"{participant.get_full_name():<{name_width}} | "
+                  f"{participant.get_team_colour():<{team_width}} | "
+                  f"{participant.get_champion():<{champ_width}} | "
+                  f"{kda:<{kda_width}} | "
+                  f"{participant.get_role():<{role_width}} | "
+                  f"{participant.get_gold():<{gold_width}}")
+            print("-" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
+
