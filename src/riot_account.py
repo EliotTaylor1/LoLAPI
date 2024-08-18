@@ -36,11 +36,13 @@ class RiotAccount:
                 f"Mastery Level: {self._overall_champion_mastery}\n"
                 f"Last profile activity: {self._date_of_last_activity}\n"
                 f"Last match: {self._date_of_last_match}\n"
-                f"Solo Q - Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP || "
-                f"W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
-                f"Flex Q - Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP || "
-                f"W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n"
-                f"Arena - W/L: {self._wins.get('Arena')}W/{self._losses.get('Arena')}L - {self._winrates.get('Arena'):.2f}%\n")
+                f"{self.print_ranked_performance()}")
+
+        # f"Solo Q - Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP || "
+        # f"W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
+        # f"Flex Q - Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP || "
+        # f"W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n"
+        # f"Arena - W/L: {self._wins.get('Arena')}W/{self._losses.get('Arena')}L - {self._winrates.get('Arena'):.2f}%\n")
 
     def _load_account_info(self):
         print("Setting PUUID")
@@ -92,9 +94,15 @@ class RiotAccount:
                 self._league_points["Arena"] = queue["leaguePoints"]
                 self._wins["Arena"] = queue["wins"]
                 self._losses["Arena"] = queue["losses"]
-        self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
-        self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
-        self._winrates["Arena"] = (self._wins.get('Arena') / (self._wins.get('Arena') + self._losses.get('Arena'))) * 100
+        if "Solo" in self._wins:
+            self._winrates["Solo"] = (self._wins.get('Solo') / (
+                    self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+        if "Flex" in self._wins:
+            self._winrates["Flex"] = (self._wins.get('Flex') / (
+                    self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+        if "Arena" in self._wins:
+            self._winrates["Arena"] = (self._wins.get('Arena') / (
+                    self._wins.get('Arena') + self._losses.get('Arena'))) * 100
 
     def set_match_history_length(self):
         if self._match_history_length is not None:
@@ -171,6 +179,16 @@ class RiotAccount:
     def get_match_history(self):
         return self._match_history
 
+    def print_ranked_performance(self):
+        message = ""
+        if "Solo" in self._wins:
+            message += f"Solo Q - Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP || W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
+        if "Flex" in self._wins:
+            message += f"Flex Q - Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP || W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n"
+        if "Arena" in self._wins:
+            message += f"Arena - W/L: {self._wins.get('Arena')}W/{self._losses.get('Arena')}L - {self._winrates.get('Arena'):.2f}%"
+        return message
+
     def print_match_history(self):
         i = 1
         for match in self._match_history:
@@ -178,4 +196,3 @@ class RiotAccount:
             print(f"{match}")
             print("=========================\n")
             i += 1
-
