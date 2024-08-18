@@ -9,7 +9,7 @@ class RiotAccount:
 
     def __init__(self, game_name, tagline):
         self.utils = Utils()
-        self._match_history_length = None
+        self._match_history_length = 0
         self._game_name = game_name
         self._tagline = tagline
         self._puuid = None
@@ -112,19 +112,22 @@ class RiotAccount:
         else:
             self._winrates["Arena"] = 0
 
+    def reset_match_history(self):
+        self._match_history_length = 0
+        self._match_history.clear()
+
     def set_match_history_length(self):
-        if self._match_history_length is not None:
+        if self._match_history_length > 0:
             print("Match history length already set")
             return
         num_of_games_valid = False
         while not num_of_games_valid:
-            num_of_games_input = input("Enter number of games: ")
+            num_of_games_input = input("Enter number of games to get data for (1 - 100): ")
             num_of_games = int(num_of_games_input)
             if num_of_games < 1 or num_of_games > 100:
                 print("Number of games must be between 1 - 100")
             else:
                 self._match_history_length = num_of_games
-                self._retrieve_match_history(self._match_history_length)
                 num_of_games_valid = True
 
     def _set_overall_champion_mastery(self):
@@ -141,7 +144,7 @@ class RiotAccount:
             self._champion_mastery_levels[champion_name.get_name()] = entry["championLevel"]
             self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
 
-    def _retrieve_match_history(self, num_of_matches):
+    def retrieve_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
         for match_id in match_ids:
@@ -201,6 +204,9 @@ class RiotAccount:
 
     def get_match_history(self):
         return self._match_history
+
+    def get_match_history_length(self):
+        return self._match_history_length
 
     def print_champion_mastery(self):
         print("====== Top 10 Champion Mastery ======")
