@@ -67,7 +67,7 @@ def main():
             account.set_match_history_length()
             handle_match_history_submenu(account)
         elif user_input == 3:
-            raise NotImplementedError("WIP")
+            account.print_champion_mastery()
         elif user_input == 4:
             break
         else:

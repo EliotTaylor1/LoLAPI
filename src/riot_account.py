@@ -2,6 +2,7 @@ from datetime import datetime
 
 from utils import Utils
 from match import Match
+from champion import Champion
 
 
 class RiotAccount:
@@ -18,6 +19,8 @@ class RiotAccount:
         self._date_of_last_match = None
         self._account_level = None
         self._overall_champion_mastery = None
+        self._champion_mastery_levels = {}
+        self._champion_mastery_points = {}
         self._tiers = {}
         self._ranks = {}
         self._league_points = {}
@@ -38,21 +41,17 @@ class RiotAccount:
                 f"Last match: {self._date_of_last_match}\n"
                 f"{self.print_ranked_performance()}")
 
-        # f"Solo Q - Rank: {self._tiers.get('Solo')} {self._ranks.get('Solo')} {self._league_points.get('Solo')}LP || "
-        # f"W/L: {self._wins.get('Solo')}W/{self._losses.get('Solo')}L - {self._winrates.get('Solo'):.2f}%\n"
-        # f"Flex Q - Rank: {self._tiers.get('Flex')} {self._ranks.get('Flex')} {self._league_points.get('Flex')}LP || "
-        # f"W/L: {self._wins.get('Flex')}W/{self._losses.get('Flex')}L - {self._winrates.get('Flex'):.2f}%\n"
-        # f"Arena - W/L: {self._wins.get('Arena')}W/{self._losses.get('Arena')}L - {self._winrates.get('Arena'):.2f}%\n")
-
     def _load_account_info(self):
         print("Setting PUUID")
         self._set_account_puuid()
-        print("Setting Account info")
+        print("Setting Account Info")
         self._set_account_info()
         print("Setting Ranked Info")
         self._set_ranked_info()
-        print("Setting Overall mastery")
+        print("Setting Overall Mastery")
         self._set_overall_champion_mastery()
+        print("Setting Mastery Levels")
+        self._set_mastery_levels()
         print("Setting Date of last match")
         self._set_date_of_last_match()
 
@@ -98,15 +97,18 @@ class RiotAccount:
         # then check if they have won a game in that queue type to avoid divide by 0.
         # if they haven't won a game just set winrate to 0.
         if "Solo" in self._wins and self._wins["Solo"] > 0:
-            self._winrates["Solo"] = (self._wins.get('Solo') / (self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+            self._winrates["Solo"] = (self._wins.get('Solo') / (
+                        self._wins.get('Solo') + self._losses.get('Solo'))) * 100
         else:
             self._winrates["Solo"] = 0
         if "Flex" in self._wins and self._wins["Flex"] > 0:
-            self._winrates["Flex"] = (self._wins.get('Flex') / (self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+            self._winrates["Flex"] = (self._wins.get('Flex') / (
+                        self._wins.get('Flex') + self._losses.get('Flex'))) * 100
         else:
             self._winrates["Flex"] = 0
         if "Arena" in self._wins and self._wins["Arena"] > 0:
-            self._winrates["Arena"] = (self._wins.get('Arena') / (self._wins.get('Arena') + self._losses.get('Arena'))) * 100
+            self._winrates["Arena"] = (self._wins.get('Arena') / (
+                        self._wins.get('Arena') + self._losses.get('Arena'))) * 100
         else:
             self._winrates["Arena"] = 0
 
@@ -129,6 +131,15 @@ class RiotAccount:
         endpoint = f"/lol/champion-mastery/v4/scores/by-puuid/{self._puuid}"
         mastery = self.utils.make_request_server(endpoint)
         self._overall_champion_mastery = mastery
+
+    def _set_mastery_levels(self):
+        endpoint = f"/lol/champion-mastery/v4/champion-masteries/by-puuid/{self._puuid}/top?count=10"
+        mastery_info = self.utils.make_request_server(endpoint)
+        for entry in mastery_info:
+            champion_id = entry["championId"]
+            champion_name = Champion(champion_id)
+            self._champion_mastery_levels[champion_name.get_name()] = entry["championLevel"]
+            self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
 
     def _retrieve_match_history(self, num_of_matches):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
@@ -164,6 +175,12 @@ class RiotAccount:
     def get_overall_mastery_level(self):
         return self._overall_champion_mastery
 
+    def get_champion_mastery_levels(self):
+        return self._champion_mastery_levels
+
+    def get_champion_mastery_points(self):
+        return self._champion_mastery_points
+
     def get_tiers(self):
         return self._tiers
 
@@ -184,6 +201,20 @@ class RiotAccount:
 
     def get_match_history(self):
         return self._match_history
+
+    def print_champion_mastery(self):
+        print("====== Top 10 Champion Mastery ======")
+        # Set the width of the columns
+        index_width = 2
+        champion_width = max(len(name) for name in self._champion_mastery_levels) + 3
+        level_width = 3
+        i = 0
+        for champion_name in self._champion_mastery_levels:
+            i += 1
+            mastery_level = self._champion_mastery_levels[champion_name]
+            mastery_points = self._champion_mastery_points[champion_name]
+            print(
+                f"{i:<{index_width}} {champion_name:<{champion_width}} || Mastery Level: {mastery_level:<{level_width}} || Mastery Points: {mastery_points}")
 
     def print_ranked_performance(self):
         message = ""
