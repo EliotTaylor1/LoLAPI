@@ -17,7 +17,7 @@ class Champion:
                 self._champion_name = champion_data.get("id")
                 return
         else:
-            print(f"{data.get("key")} not found in data.")
+            print(f"{data.get('key')} not found in data.")
 
     def get_name(self):
         return self._champion_name
