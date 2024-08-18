@@ -1,5 +1,5 @@
 import json
-
+import os
 import requests
 
 
@@ -10,7 +10,9 @@ class Utils:
             self.region = region
             self.server = server
         else:
-            with open("../config.json") as f:
+            config_path = os.path.join(os.path.dirname(__file__),'..', 'config.json')
+            config_path = os.path.abspath(config_path)
+            with open(config_path) as f:
                 config = json.load(f)
             self.api_key = config.get("api_key")
             self.region = config.get("region")
