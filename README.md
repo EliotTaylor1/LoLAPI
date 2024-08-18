@@ -9,7 +9,7 @@ LoLAPI is a CLI tool written in Python that allows you to look-up stats for a Le
 3. Open `config.json`
 4. Insert your riot API key
 5. Insert the region and server of the player you want to search
-6. run `run.sh` (Linux/MacOS) or `run.bat` (Windows)
+6. run src/main.py
 
 ## Roadmap
 1. Retrieve account champion stats
