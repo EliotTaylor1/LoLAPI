@@ -145,7 +145,7 @@ class RiotAccount:
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
         for match_id in match_ids:
-            match = Match(match_id)
+            match = Match(match_id, self._puuid)
             self._match_history.append(match)
 
     def _set_date_of_last_match(self):

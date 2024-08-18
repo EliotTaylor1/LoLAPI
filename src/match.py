@@ -6,8 +6,10 @@ from utils import Utils
 
 
 class Match:
-    def __init__(self, match_id):
+    def __init__(self, match_id, account_puuid):
         self.utils = Utils()
+        self._account_puuid = account_puuid
+        self._result_for_account = None
         self._match_id = match_id
         self._match_info = None
         self._match_date = None
@@ -21,10 +23,11 @@ class Match:
         self._load_match_summary()
 
     def __str__(self):
-        return (f"Match ID: {self._match_id}\n"
+        return (f"{self._result_for_account}\n"
+                f"Match ID: {self._match_id}\n"
                 f"Match Date: {self._match_date}\n"
                 f"Gamemode: {self.print_game_mode()}\n"
-                f"Winning team: {self.get_winning_team()} in {self.print_duration()}\n"
+                f"Winning team: {self.print_winning_team()} in {self.print_duration()}\n"
                 f"Players: {self.print_players()}\n"
                 f"Picks: {', '.join(self._picked_champions)}\n"
                 f"Bans: {', '.join(map(str, self._banned_champions))}")
@@ -47,6 +50,8 @@ class Match:
         self._set_winning_team()
         print("Setting team gold")
         self._set_team_gold()
+        print("Setting if account won or not")
+        self._set_result_for_account()
         print("Match info set")
 
     def _retrieve_match_info(self):
@@ -91,11 +96,21 @@ class Match:
         for team in teams:
             team_id = team.get("teamId")
             if team.get("win") and team_id == 100:
-                self._winning_team = "Blue"
+                self._winning_team = 100
                 break
             else:
-                self._winning_team = "Red"
+                self._winning_team = 200
                 break
+
+    def _set_result_for_account(self):
+        account_team_id = None
+        for participant in self._participants:
+            if participant.get_puuid() == self._account_puuid:
+                account_team_id = participant.get_teamId()
+        if account_team_id == self.get_winning_team():
+            self._result_for_account = "WIN"
+        else:
+            self._result_for_account = "LOSS"
 
     def _set_date(self):
         info = self._match_info.get("info")
@@ -128,6 +143,12 @@ class Match:
 
     def get_match_info(self):
         return self._match_info
+
+    def print_winning_team(self):
+        if self._winning_team == 100:
+            return "Blue"
+        else:
+            return "Red"
 
     def print_players(self):
         players = []
@@ -175,7 +196,7 @@ class Match:
         gold_width = 10
 
         print(f"Match Date: {self._match_date}\n"
-              f"Winning Team: {self.get_winning_team()} || Game Length: {self.print_duration()}\n"
+              f"Winning Team: {self.print_winning_team()} || Game Length: {self.print_duration()}\n"
               f"Blue Team Gold: {self.get_team_gold().get(100)}\n"
               f"Red Team Gold: {self.get_team_gold().get(200)}\n")
         print("=" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
