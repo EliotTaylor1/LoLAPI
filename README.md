@@ -13,7 +13,6 @@ LoLAPI-CLI is a CLI tool written in Python that allows you to look-up stats for 
 
 ## Roadmap
 1. Remove need for region and server setting in config.json
-2. Allow lookup of another account without needing to restart
 3. Debug / verbose mode
 4. UI
 

@@ -1,32 +1,34 @@
 from riot_account import RiotAccount
 
-name_valid = False
-while not name_valid:
-    name = input("Enter account name: ")
-    if len(name) < 3 or len(name) > 16:
-        print("Account name must be between 3 and 16 characters")
-    else:
-        name_valid = True
 
-tag_valid = False
-while not tag_valid:
-    tag = input("Enter tag: ")
-    if tag[0] == '#':
-        print("Tag should not start with #")
-    elif len(tag) < 2 or len(tag) > 5:
-        print("Tag must be between 2 - 5 characters")
-    elif not tag.isalnum():
-        print("Tag must only contain alphanumeric characters")
-    else:
-        tag_valid = True
-
+def get_account_details():
+    name_valid = False
+    while not name_valid:
+        name = input("Enter account name: ")
+        if len(name) < 3 or len(name) > 16:
+            print("Account name must be between 3 and 16 characters")
+        else:
+            name_valid = True
+    tag_valid = False
+    while not tag_valid:
+        tag = input("Enter tag: ")
+        if tag[0] == '#':
+            print("Tag should not start with #")
+        elif len(tag) < 2 or len(tag) > 5:
+            print("Tag must be between 2 - 5 characters")
+        elif not tag.isalnum():
+            print("Tag must only contain alphanumeric characters")
+        else:
+            tag_valid = True
+    return name, tag
 
 def print_main_menu():
     print("\nAvailable actions")
     print("1. View profile information")
     print("2. View match history")
     print("3. Retrieve champion stats")
-    print("4. Exit")
+    print("4. Change account")
+    print("5. Exit")
 
 
 def print_match_history_menu():
@@ -57,6 +59,7 @@ def handle_match_history_submenu(account):
 
 
 def main():
+    name, tag = get_account_details()
     account = RiotAccount(name, tag)
     while True:
         print_main_menu()
@@ -69,6 +72,9 @@ def main():
         elif user_input == 3:
             account.print_champion_mastery()
         elif user_input == 4:
+            name, tag = get_account_details()
+            account = RiotAccount(name, tag)
+        elif user_input == 5:
             break
         else:
             print("Invalid option chosen")
