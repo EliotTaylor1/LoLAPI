@@ -15,7 +15,8 @@ LoLAPI-CLI is a CLI tool written in Python that allows you to look-up stats for 
 1. Retrieve account champion stats
 2. Remove need for region and server setting in config.json
 3. Allow lookup of another account without needing to restart
-4. UI
+4. Debug / verbose mode
+5. UI
 
 ## FAQ
 ### Q: Where do I get a Riot API key?
