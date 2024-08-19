@@ -1,26 +1,32 @@
-from riot_account import RiotAccount
+from src.riot_account import RiotAccount
 
 
-def get_account_details():
-    name_valid = False
-    while not name_valid:
-        name = input("Enter account name: ")
-        if len(name) < 3 or len(name) > 16:
-            print("Account name must be between 3 and 16 characters")
-        else:
-            name_valid = True
-    tag_valid = False
-    while not tag_valid:
-        tag = input("Enter tag: ")
-        if tag[0] == '#':
-            print("Tag should not start with #")
-        elif len(tag) < 2 or len(tag) > 5:
-            print("Tag must be between 2 - 5 characters")
-        elif not tag.isalnum():
-            print("Tag must only contain alphanumeric characters")
-        else:
-            tag_valid = True
+def get_user_input():
+    name = input("Enter account name: ")
+    tag = input("Enter tag: ")
     return name, tag
+
+
+def is_account_name_valid(name):
+    if len(name) < 3 or len(name) > 16:
+        print("Account name must be between 3 and 16 characters")
+        return False
+    else:
+        return True
+
+
+def is_tag_valid(tag):
+    if tag[0] == '#':
+        print("Tag should not start with #")
+        return False
+    elif len(tag) < 2 or len(tag) > 5:
+        print("Tag must be between 2 - 5 characters")
+        return False
+    elif not tag.isalnum():
+        print("Tag must only contain alphanumeric characters")
+        return False
+    else:
+        return True
 
 
 def print_main_menu():
@@ -65,26 +71,33 @@ def handle_match_history_submenu(account):
 
 
 def main():
-    name, tag = get_account_details()
-    account = RiotAccount(name, tag)
-    while True:
-        print_main_menu()
-        user_input = int(input("Enter action number: "))
-        if user_input == 1:
-            print(f"\n{account}")
-        elif user_input == 2:
-            account.set_match_history_length()
-            handle_match_history_submenu(account)
-        elif user_input == 3:
-            account.print_champion_mastery()
-        elif user_input == 4:
-            name, tag = get_account_details()
-            account = RiotAccount(name, tag)
-        elif user_input == 5:
-            break
-        else:
-            print("Invalid option chosen")
-    print("goodbye")
+    name, tag = get_user_input()
+    if is_account_name_valid(name) and is_tag_valid(tag):
+        account = RiotAccount(name, tag)
+        while True:
+            print_main_menu()
+            user_input = int(input("Enter action number: "))
+            if user_input == 1:
+                print(f"\n{account}")
+            elif user_input == 2:
+                account.set_match_history_length()
+                handle_match_history_submenu(account)
+            elif user_input == 3:
+                account.print_champion_mastery()
+            elif user_input == 4:
+                name, tag = get_user_input()
+                if is_account_name_valid(name) and is_tag_valid(tag):
+                    account = RiotAccount(name, tag)
+                else:
+                    raise Exception("Invalid user credentials")
+            elif user_input == 5:
+                break
+            else:
+                print("Invalid option chosen")
+        print("goodbye")
+    else:
+        raise Exception("Invalid user credentials")
+
 
 
 try:
