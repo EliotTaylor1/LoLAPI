@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from utils import Utils
-from match import Match
-from champion import Champion
+from src.utils import Utils
+from src.match import Match
+from src.champion import Champion
 
 
 class RiotAccount:

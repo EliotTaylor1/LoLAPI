@@ -1,4 +1,4 @@
-from utils import Utils
+from src.utils import Utils
 
 
 class Champion:

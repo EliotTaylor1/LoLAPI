@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from participant import Participant
-from champion import Champion
-from utils import Utils
-
+from src.participant import Participant
+from src.champion import Champion
+from src.utils import Utils
 
 class Match:
     def __init__(self, match_id, account_puuid):
