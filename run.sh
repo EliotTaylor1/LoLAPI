@@ -18,4 +18,4 @@ python3 -m pip install -r requirements.txt
 echo Packages checked
 
 echo Starting...
-python3 src/main.py
+python3 main.py

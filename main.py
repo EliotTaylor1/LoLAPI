@@ -29,8 +29,6 @@ def is_tag_valid(tag):
         return True
 
 
-#if __name__ == "__main__":
-
 def print_main_menu():
     print("\nAvailable actions")
     print("1. View profile information")
@@ -39,12 +37,14 @@ def print_main_menu():
     print("4. Change account")
     print("5. Exit")
 
+
 def print_match_history_menu():
     print("Available actions")
     print("1. View match history")
     print("2. Get match details")
     print("3. Change match history length")
     print("4. Return to main menu")
+
 
 def handle_match_history_submenu(account):
     while True:
@@ -68,6 +68,7 @@ def handle_match_history_submenu(account):
             break
         else:
             print("Invalid action chosen")
+
 
 def main():
     name, tag = get_user_input()
@@ -97,7 +98,9 @@ def main():
     else:
         raise Exception("Invalid user credentials")
 
-try:
-    main()
-except Exception as e:
-    print(e)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(e)

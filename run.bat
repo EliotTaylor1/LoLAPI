@@ -19,5 +19,5 @@ python -m pip install -r requirements.txt
 echo Packages checked
 
 echo Starting...
-python src\main.py
+python main.py
 
