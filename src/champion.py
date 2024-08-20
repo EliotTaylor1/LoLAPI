@@ -2,7 +2,7 @@ from src.utils import Utils
 
 
 class Champion:
-    def __init__(self, champion_id):
+    def __init__(self, champion_id: str):
         self.utils = Utils()
         self._champion_name = None
         self._champion_id = champion_id

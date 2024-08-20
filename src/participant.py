@@ -1,5 +1,5 @@
 class Participant:
-    def __init__(self, participant_data):
+    def __init__(self, participant_data: dict):
         self._game_name = participant_data.get("riotIdGameName")
         self._tagline = participant_data.get("riotIdTagline")
         self._puuid = participant_data.get("puuid")

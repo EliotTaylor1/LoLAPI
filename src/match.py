@@ -4,8 +4,9 @@ from src.participant import Participant
 from src.champion import Champion
 from src.utils import Utils
 
+
 class Match:
-    def __init__(self, match_id, account_puuid):
+    def __init__(self, match_id: str, account_puuid: str):
         self.utils = Utils()
         self._account_puuid = account_puuid
         self._result_for_account = None
@@ -217,4 +218,3 @@ class Match:
                   f"{participant.get_role():<{role_width}} | "
                   f"{participant.get_gold():<{gold_width}}")
             print("-" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
-

@@ -10,7 +10,7 @@ class Utils:
             self.region = region
             self.server = server
         else:
-            config_path = os.path.join(os.path.dirname(__file__),'..', 'config.json')
+            config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
             config_path = os.path.abspath(config_path)
             with open(config_path) as f:
                 config = json.load(f)
@@ -18,7 +18,7 @@ class Utils:
             self.region = config.get("region")
             self.server = config.get("server")
 
-    def make_request_region(self, endpoint):
+    def make_request_region(self, endpoint: str):
         url = f"https://{self.region}.api.riotgames.com{endpoint}"
         print(f"making request to: {url}")
         headers = {
@@ -30,7 +30,7 @@ class Utils:
         else:
             raise Exception(f"Request failed with {response.status_code}: {response.text}")
 
-    def make_request_server(self, endpoint):
+    def make_request_server(self, endpoint: str):
         url = f"https://{self.server}.api.riotgames.com{endpoint}"
         print(f"making request to: {url}")
         headers = {
