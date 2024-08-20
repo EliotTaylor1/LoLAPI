@@ -3,6 +3,15 @@ import os
 import requests
 
 
+def load_champion_data():
+    url = "https://ddragon.leagueoflegends.com/cdn/14.16.1/data/en_US/champion.json"
+    response = requests.get(url)
+    if response.status_code == 200:
+        champion_data = response.json()
+        return champion_data
+    else:
+        raise Exception(f"Failed to fetch champion data {response.status_code}: {response.text}")
+
 class Utils:
     def __init__(self, api_key=None, region=None, server=None):
         if api_key and region and server:
@@ -41,12 +50,3 @@ class Utils:
             return response.json()
         else:
             raise Exception(f"Request failed with {response.status_code}: {response.text}")
-
-    def load_champion_data(self):
-        url = "https://ddragon.leagueoflegends.com/cdn/14.16.1/data/en_US/champion.json"
-        response = requests.get(url)
-        if response.status_code == 200:
-            champion_data = response.json()
-            return champion_data
-        else:
-            raise Exception(f"Failed to fetch champion data {response.status_code}: {response.text}")
