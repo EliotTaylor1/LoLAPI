@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from src.utils import Utils
 from src.match import Match
@@ -6,6 +7,7 @@ from src.champion import Champion
 
 
 class RiotAccount:
+    logger = logging.getLogger(__name__)
 
     def __init__(self, game_name, tagline):
         self.utils = Utils()
@@ -42,17 +44,18 @@ class RiotAccount:
                 f"{self.print_ranked_performance()}")
 
     def _load_account_info(self):
-        print("Setting PUUID")
+        print(f"Getting info for {self._game_name}#{self._tagline}...")
+        RiotAccount.logger.info("Setting PUUID")
         self._set_account_puuid()
-        print("Setting Account Info")
+        RiotAccount.logger.info("Setting Account Info")
         self._set_account_info()
-        print("Setting Ranked Info")
+        RiotAccount.logger.info("Setting Ranked Info")
         self._set_ranked_info()
-        print("Setting Overall Mastery")
+        RiotAccount.logger.info("Setting Overall Mastery")
         self._set_overall_champion_mastery()
-        print("Setting Mastery Levels")
+        RiotAccount.logger.info("Setting Mastery Levels")
         self._set_mastery_levels()
-        print("Setting Date of last match")
+        RiotAccount.logger.info("Setting Date of last match")
         self._set_date_of_last_match()
 
     def _set_account_puuid(self):
@@ -63,13 +66,13 @@ class RiotAccount:
     def _set_account_info(self):
         endpoint = f"/lol/summoner/v4/summoners/by-puuid/{self._puuid}"
         account_info = self.utils.make_request_server(endpoint)
-        print("Setting Summoner level")
+        RiotAccount.logger.info("Setting Summoner level")
         self._account_level = account_info.get("summonerLevel")
-        print("Setting Account ID")
+        RiotAccount.logger.info("Setting Account ID")
         self._account_id = account_info.get("accountId")
-        print("Setting Summoner ID")
+        RiotAccount.logger.info("Setting Summoner ID")
         self._summoner_id = account_info.get("id")
-        print("Setting Last revision date")
+        RiotAccount.logger.info("Setting Last revision date")
         revision_date = account_info.get("revisionDate") / 1000  # format posix date correctly
         self._date_of_last_activity = datetime.fromtimestamp(revision_date)
 
@@ -98,17 +101,17 @@ class RiotAccount:
         # if they haven't won a game just set winrate to 0.
         if "Solo" in self._wins and self._wins["Solo"] > 0:
             self._winrates["Solo"] = (self._wins.get('Solo') / (
-                        self._wins.get('Solo') + self._losses.get('Solo'))) * 100
+                    self._wins.get('Solo') + self._losses.get('Solo'))) * 100
         else:
             self._winrates["Solo"] = 0
         if "Flex" in self._wins and self._wins["Flex"] > 0:
             self._winrates["Flex"] = (self._wins.get('Flex') / (
-                        self._wins.get('Flex') + self._losses.get('Flex'))) * 100
+                    self._wins.get('Flex') + self._losses.get('Flex'))) * 100
         else:
             self._winrates["Flex"] = 0
         if "Arena" in self._wins and self._wins["Arena"] > 0:
             self._winrates["Arena"] = (self._wins.get('Arena') / (
-                        self._wins.get('Arena') + self._losses.get('Arena'))) * 100
+                    self._wins.get('Arena') + self._losses.get('Arena'))) * 100
         else:
             self._winrates["Arena"] = 0
 
@@ -145,6 +148,7 @@ class RiotAccount:
             self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
 
     def retrieve_match_history(self, num_of_matches):
+        print("Retrieving match history...")
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
         for match_id in match_ids:

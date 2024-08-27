@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from src.participant import Participant
@@ -6,6 +7,8 @@ from src.utils import Utils
 
 
 class Match:
+    logger = logging.getLogger(__name__)
+
     def __init__(self, match_id: str, account_puuid: str):
         self.utils = Utils()
         self._account_puuid = account_puuid
@@ -34,25 +37,25 @@ class Match:
 
     def _load_match_summary(self):
         self._match_info = self._retrieve_match_info()
-        print("Setting match game mode")
+        Match.logger.info("Setting match game mode")
         self._set_game_mode()
-        print("Setting match duration")
+        Match.logger.info("Setting match duration")
         self._set_duration()
-        print("Setting match date")
+        Match.logger.info("Setting match date")
         self._set_date()
-        print("Setting participants")
+        Match.logger.info("Setting participants")
         self._set_participants()
-        print("Setting banned champs")
+        Match.logger.info("Setting banned champs")
         self._set_banned_champions()
-        print("Setting picked champs")
+        Match.logger.info("Setting picked champs")
         self._set_picked_champions()
-        print("Setting winning team")
+        Match.logger.info("Setting winning team")
         self._set_winning_team()
-        print("Setting team gold")
+        Match.logger.info("Setting team gold")
         self._set_team_gold()
-        print("Setting if account won or not")
+        Match.logger.info("Setting if account won or not")
         self._set_result_for_account()
-        print("Match info set")
+        Match.logger.info("Match info set")
 
     def _retrieve_match_info(self):
         endpoint = f"/lol/match/v5/matches/{self._match_id}"

@@ -1,3 +1,6 @@
+import logging
+import argparse
+
 from src.menus import (
     print_main_menu,
     handle_match_history_submenu
@@ -11,6 +14,11 @@ from src.inputs import (
 
 from src.riot_account import RiotAccount
 
+
+def configure_logging(level):
+    logging.basicConfig(level=level)
+    logger = logging.getLogger()
+    logger.setLevel(level)
 
 def main():
     name, tag = get_user_input()
@@ -42,6 +50,17 @@ def main():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="LoL Account Info Viewer")
+    parser.add_argument(
+        '--log-level',
+        type=str,
+        default='CRITICAL',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help='Set the logging level'
+    )
+    args = parser.parse_args()
+    configure_logging(args.log_level)
+
     try:
         main()
     except Exception as e:
