@@ -29,7 +29,8 @@ class Database:
                       tag TEXT,
                       level INTEGER,
                       last_activity TEXT,
-                      last_match TEXT
+                      last_match TEXT,
+                      last_refresh TEXT
             );""",
             """ CREATE TABLE IF NOT EXISTS matches (
                       match_id INTEGER PRIMARY KEY,
@@ -52,13 +53,15 @@ class Database:
                       rank INTEGER,
                       league_points INTEGER,
                       wins INTEGER,
-                      losses INTEGER
+                      losses INTEGER,
+                      last_refresh TEXT
             );""",
             """ CREATE TABLE IF NOT EXISTS masteries (
                       puuid TEXT PRIMARY KEY,
                       champion_id INTEGER,
                       level INTEGER,
-                      points INTEGER
+                      points INTEGER,
+                      last_refresh TEXT
             );"""]
         try:
             with sqlite3.connect(self.db_name) as conn:
@@ -70,8 +73,8 @@ class Database:
             print(e)
 
     def insert_account(self, account_data: list):
-        sql = """ INSERT INTO accounts(puuid,summoner_id,account_id,game_name,tag,level,last_activity,last_match)
-        VALUES(?,?,?,?,?,?,?,?)"""
+        sql = """ INSERT INTO accounts(puuid,summoner_id,account_id,game_name,tag,level,last_activity,last_match,last_refresh)
+        VALUES(?,?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()
         cur.execute(sql, account_data)
         self.conn.commit()

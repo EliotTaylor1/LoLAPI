@@ -181,7 +181,8 @@ class RiotAccount:
                    self._tagline,
                    self._account_level,
                    self._date_of_last_activity,
-                   self._date_of_last_match]
+                   self._date_of_last_match,
+                   datetime.now()]
         return account
 
     def add_account_to_db(self):
@@ -219,9 +220,10 @@ class RiotAccount:
                        "tag=?,"
                        "level=?,"
                        "last_activity=?,"
-                       "last_match=?"
+                       "last_match=?,"
+                       "last_refresh=?"
                        "WHERE puuid=?")
-                cur.execute(sql,(self._game_name, self._tagline, self._account_level, self._date_of_last_activity, self._date_of_last_activity, self._puuid))
+                cur.execute(sql,(self._game_name, self._tagline, self._account_level, self._date_of_last_activity, self._date_of_last_activity, datetime.now(), self._puuid))
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
