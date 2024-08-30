@@ -13,6 +13,7 @@ from src.inputs import (
 )
 
 from src.riot_account import RiotAccount
+from src.database import Database
 
 
 def configure_logging(level):
@@ -20,7 +21,10 @@ def configure_logging(level):
     logger = logging.getLogger()
     logger.setLevel(level)
 
+
 def main():
+    db = Database()
+    db.create_tables()
     name, tag = get_user_input()
     if is_account_name_valid(name) and is_tag_valid(tag):
         account = RiotAccount(name, tag)
