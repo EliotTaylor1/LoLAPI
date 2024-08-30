@@ -48,6 +48,7 @@ def main():
                 break
             else:
                 print("Invalid option chosen")
+        db.close_connection()
         print("goodbye")
     else:
         raise Exception("Invalid user credentials")

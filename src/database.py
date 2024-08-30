@@ -11,16 +11,20 @@ class Database:
             print(sqlite3.sqlite_version)
         except sqlite3.Error as e:
             print(e)
-        finally:
-            if self.conn:
-                self.conn.close()
+        # finally:
+        #     if self.conn:
+        #         self.conn.close()
+
+    def close_connection(self):
+        if self.conn:
+            self.conn.close()
 
     def create_tables(self):
         sql_statement = [
             """CREATE TABLE IF NOT EXISTS accounts (
                       puuid TEXT PRIMARY KEY,
                       summoner_id TEXT,
-                      game_id TEXT,
+                      account_id TEXT,
                       game_name TEXT,
                       tag TEXT,
                       level INTEGER,
@@ -64,3 +68,11 @@ class Database:
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
+
+    def insert_account(self, account_data: list):
+        sql = """ INSERT INTO accounts(puuid,summoner_id,account_id,game_name,tag,level,last_activity,last_match)
+        VALUES(?,?,?,?,?,?,?,?)"""
+        cur = self.conn.cursor()
+        cur.execute(sql, account_data)
+        self.conn.commit()
+        return cur.lastrowid

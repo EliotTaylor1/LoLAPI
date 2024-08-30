@@ -1,9 +1,11 @@
+import sqlite3
 from datetime import datetime
 import logging
 
 from src.utils import Utils
 from src.match import Match
 from src.champion import Champion
+from src.database import Database
 
 
 class RiotAccount:
@@ -11,6 +13,8 @@ class RiotAccount:
 
     def __init__(self, game_name, tagline):
         self.utils = Utils()
+        self.database = Database()
+
         self._match_history_length = 0
         self._game_name = game_name
         self._tagline = tagline
@@ -30,7 +34,9 @@ class RiotAccount:
         self._losses = {}
         self._winrates = {}
         self._match_history = []
+
         self._load_account_info()
+        self.add_account_to_db()
 
     def __str__(self):
         return (f"Name: {self._game_name}#{self._tagline}\n"
@@ -166,6 +172,25 @@ class RiotAccount:
         info = match_info.get("info")
         last_match = info.get("gameCreation") / 1000  # format POSIX date correctly
         self._date_of_last_match = datetime.fromtimestamp(last_match)
+
+    def get_account_as_list(self) -> list:
+        account = [self._puuid,
+                   self._summoner_id,
+                   self._account_id,
+                   self._game_name,
+                   self._tagline,
+                   self._account_level,
+                   self._date_of_last_activity,
+                   self._date_of_last_match]
+        return account
+
+    def add_account_to_db(self):
+        try:
+            with sqlite3.connect("Database.db") as conn:
+                account = self.get_account_as_list()
+                self.database.insert_account(account)
+        except sqlite3.Error as e:
+            print(e)
 
     def get_account_puuid(self):
         return self._puuid
