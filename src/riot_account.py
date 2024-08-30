@@ -186,9 +186,43 @@ class RiotAccount:
 
     def add_account_to_db(self):
         try:
+            with sqlite3.connect("Database.db"):
+                if not self.puuid_already_in_db():
+                    account = self.get_account_as_list()
+                    self.database.insert_account(account)
+                else:
+                    RiotAccount.logger.info("PUUID already in DB, refreshing record")
+                    self.update_db_entry()
+        except sqlite3.Error as e:
+            print(e)
+
+    def puuid_already_in_db(self) -> bool:
+        try:
             with sqlite3.connect("Database.db") as conn:
-                account = self.get_account_as_list()
-                self.database.insert_account(account)
+                cur = conn.cursor()
+                cur.execute("select * from accounts")
+                rows = cur.fetchall()
+                for row in rows:
+                    if row[0] == self._puuid:
+                        return True
+                    else:
+                        return False
+        except sqlite3.Error as e:
+            print(e)
+
+    def update_db_entry(self):
+        try:
+            with sqlite3.connect("Database.db") as conn:
+                cur = conn.cursor()
+                sql = ("UPDATE accounts "
+                       "SET game_name=?,"
+                       "tag=?,"
+                       "level=?,"
+                       "last_activity=?,"
+                       "last_match=?"
+                       "WHERE puuid=?")
+                cur.execute(sql,(self._game_name, self._tagline, self._account_level, self._date_of_last_activity, self._date_of_last_activity, self._puuid))
+                conn.commit()
         except sqlite3.Error as e:
             print(e)
 
