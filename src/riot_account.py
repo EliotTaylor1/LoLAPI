@@ -34,10 +34,11 @@ class RiotAccount:
         self._losses = {}
         self._winrates = {}
         self._match_history = []
-
         self._champion_mastery_tuples = []
         self._ranked_games_tuples = []
+
         self._load_account_info()
+
         self.add_account_to_db()
         self.add_masteries_to_db()
         self.add_ranks_to_db()
