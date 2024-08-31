@@ -47,21 +47,26 @@ class Database:
                       match_date TEXT
             );""",
             """ CREATE TABLE IF NOT EXISTS ranks (
-                      puuid TEXT PRIMARY KEY,
-                      queue_type INTEGER,
+                      puuid TEXT,
+                      queue_name TEXT,
                       tier TEXT,
                       rank INTEGER,
                       league_points INTEGER,
                       wins INTEGER,
                       losses INTEGER,
-                      last_refresh TEXT
+                      last_refresh TEXT,
+                      FOREIGN KEY (puuid)   
+                        REFERENCES accounts (puuid)
             );""",
             """ CREATE TABLE IF NOT EXISTS masteries (
-                      puuid TEXT PRIMARY KEY,
+                      puuid TEXT,
                       champion_id INTEGER,
+                      champion_name TEXT,
                       level INTEGER,
                       points INTEGER,
-                      last_refresh TEXT
+                      last_refresh TEXT,
+                      FOREIGN KEY (puuid)
+                        REFERENCES accounts (puuid)
             );"""]
         try:
             with sqlite3.connect(self.db_name) as conn:
@@ -77,5 +82,21 @@ class Database:
         VALUES(?,?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()
         cur.execute(sql, account_data)
+        self.conn.commit()
+        return cur.lastrowid
+
+    def insert_masteries(self, mastery_data: list):
+        sql = """ INSERT INTO masteries(puuid,champion_id,champion_name,level,points,last_refresh)
+        VALUES(?,?,?,?,?,?)"""
+        cur = self.conn.cursor()
+        cur.execute(sql, mastery_data)
+        self.conn.commit()
+        return cur.lastrowid
+
+    def insert_ranks(self, ranked_data: list):
+        sql = """ INSERT INTO ranks(puuid,queue_name,tier,rank,league_points,wins,losses,last_refresh)
+        VALUES(?,?,?,?,?,?,?,?)"""
+        cur = self.conn.cursor()
+        cur.execute(sql, ranked_data)
         self.conn.commit()
         return cur.lastrowid

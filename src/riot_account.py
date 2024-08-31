@@ -27,16 +27,20 @@ class RiotAccount:
         self._overall_champion_mastery = None
         self._champion_mastery_levels = {}
         self._champion_mastery_points = {}
+        self._champion_mastery_tuples = []
         self._tiers = {}
         self._ranks = {}
         self._league_points = {}
         self._wins = {}
         self._losses = {}
+        self._ranked_games_tuples = []
         self._winrates = {}
         self._match_history = []
 
         self._load_account_info()
         self.add_account_to_db()
+        self.add_masteries_to_db()
+        self.add_ranks_to_db()
 
     def __str__(self):
         return (f"Name: {self._game_name}#{self._tagline}\n"
@@ -92,12 +96,16 @@ class RiotAccount:
                 self._league_points["Solo"] = queue["leaguePoints"]
                 self._wins["Solo"] = queue["wins"]
                 self._losses["Solo"] = queue["losses"]
+                solo_tuple = (self._puuid, queue["queueType"], self._tiers.get("Solo"), self._ranks.get("Solo"), self._league_points.get("Solo"), self._wins.get("Solo"), self._losses.get("Solo"), datetime.now())
+                self._ranked_games_tuples.append(solo_tuple)
             elif queue["queueType"] == "RANKED_FLEX_SR":
                 self._tiers["Flex"] = queue["tier"]
                 self._ranks["Flex"] = queue["rank"]
                 self._league_points["Flex"] = queue["leaguePoints"]
                 self._wins["Flex"] = queue["wins"]
                 self._losses["Flex"] = queue["losses"]
+                flex_tuple = (self._puuid, queue["queueType"], self._tiers.get("Flex"), self._ranks.get("Flex"), self._league_points.get("Flex"), self._wins.get("Flex"), self._losses.get("Flex"), datetime.now())
+                self._ranked_games_tuples.append(flex_tuple)
             elif queue["queueType"] == "CHERRY":
                 self._league_points["Arena"] = queue["leaguePoints"]
                 self._wins["Arena"] = queue["wins"]
@@ -152,6 +160,9 @@ class RiotAccount:
             champion_name = Champion(champion_id)
             self._champion_mastery_levels[champion_name.get_name()] = entry["championLevel"]
             self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
+            champion_mastery_tuple = (
+                self._puuid, champion_id, champion_name.get_name(), entry["championLevel"], entry["championPoints"], datetime.now())
+            self._champion_mastery_tuples.append(champion_mastery_tuple)
 
     def retrieve_match_history(self, num_of_matches):
         print("Retrieving match history...")
@@ -186,24 +197,55 @@ class RiotAccount:
         return account
 
     def add_account_to_db(self):
+        RiotAccount.logger.info("Adding new accounts record")
         try:
             with sqlite3.connect("Database.db"):
-                if not self.puuid_already_in_db():
+                if not self.puuid_already_in_db("accounts"):
                     account = self.get_account_as_list()
                     self.database.insert_account(account)
                 else:
-                    RiotAccount.logger.info("PUUID already in DB, refreshing record")
-                    self.update_db_entry()
+                    RiotAccount.logger.info("PUUID already in DB, refreshing account record")
+                    self.refresh_accounts_record()
         except sqlite3.Error as e:
             print(e)
 
-    def puuid_already_in_db(self) -> bool:
+    def add_masteries_to_db(self):
+        RiotAccount.logger.info("Adding new masteries record")
+        try:
+            with sqlite3.connect("Database.db"):
+                if not self.puuid_already_in_db("masteries"):
+                    for mastery_tuple in self._champion_mastery_tuples:
+                        RiotAccount.logger.info(f"Mastery tuple data: {mastery_tuple}")
+                        self.database.insert_masteries(mastery_tuple)
+                else:
+                    RiotAccount.logger.info("PUUID already in DB, refreshing mastery records")
+                    self.refresh_masteries_record()
+        except sqlite3.Error as e:
+            print(e)
+
+    def add_ranks_to_db(self):
+        RiotAccount.logger.info("Adding new masteries record")
+        try:
+            with sqlite3.connect("Database.db"):
+                if not self.puuid_already_in_db("ranks"):
+                    for rank_tuple in self._ranked_games_tuples:
+                        RiotAccount.logger.info(f"Ranked tuple data: {rank_tuple}")
+                        self.database.insert_ranks(rank_tuple)
+                else:
+                    RiotAccount.logger.info("PUUID already in DB, refreshing ranked records")
+                    self.refresh_ranked_record()
+        except sqlite3.Error as e:
+            print(e)
+
+    def puuid_already_in_db(self, table: str) -> bool:
+        RiotAccount.logger.info(f"Checking if puuid already in {table}")
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute("select * from accounts")
+                cur.execute(f"select * from {table}")
                 rows = cur.fetchall()
                 for row in rows:
+                    RiotAccount.logger.info(f"Iteration data: {row[0]} {self._puuid}")
                     if row[0] == self._puuid:
                         return True
                     else:
@@ -211,7 +253,8 @@ class RiotAccount:
         except sqlite3.Error as e:
             print(e)
 
-    def update_db_entry(self):
+    def refresh_accounts_record(self):
+        RiotAccount.logger.info("Refreshing accounts record")
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
@@ -223,7 +266,44 @@ class RiotAccount:
                        "last_match=?,"
                        "last_refresh=?"
                        "WHERE puuid=?")
-                cur.execute(sql,(self._game_name, self._tagline, self._account_level, self._date_of_last_activity, self._date_of_last_activity, datetime.now(), self._puuid))
+                cur.execute(sql, (self._game_name, self._tagline, self._account_level, self._date_of_last_activity,
+                                  self._date_of_last_activity, datetime.now(), self._puuid))
+                conn.commit()
+        except sqlite3.Error as e:
+            print(e)
+
+    def refresh_masteries_record(self):
+        RiotAccount.logger.info("Refreshing masteries record")
+        try:
+            with sqlite3.connect("Database.db") as conn:
+                cur = conn.cursor()
+                sql = ("UPDATE masteries "
+                       "SET level=?,"
+                       "points=?,"
+                       "last_refresh=?"
+                       "WHERE puuid=?")
+                for mastery_tuple in self._champion_mastery_tuples:
+                    cur.execute(sql, (mastery_tuple[2], mastery_tuple[3], datetime.now()))
+                conn.commit()
+        except sqlite3.Error as e:
+            print(e)
+
+    def refresh_ranked_record(self):
+        RiotAccount.logger.info("Refreshing ranked record")
+        try:
+            with sqlite3.connect("Database.db") as conn:
+                cur = conn.cursor()
+                sql = ("UPDATE ranks "
+                       "SET queue_name=?,"
+                       "tier=?,"
+                       "rank=?,"
+                       "league_points=?,"
+                       "wins=?,"
+                       "losses=?,"
+                       "last_refresh=?"
+                       "WHERE puuid=?")
+                for rank_tuple in self._ranked_games_tuples:
+                    cur.execute(sql, (rank_tuple[1],rank_tuple[2],rank_tuple[3],rank_tuple[4],rank_tuple[5],rank_tuple[6], datetime.now()))
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
