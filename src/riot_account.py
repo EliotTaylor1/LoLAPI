@@ -11,7 +11,7 @@ from src.database import Database
 class RiotAccount:
     logger = logging.getLogger(__name__)
 
-    def __init__(self, game_name, tagline):
+    def __init__(self, game_name: str, tagline: str):
         self.utils = Utils()
         self.database = Database()
 
@@ -27,16 +27,16 @@ class RiotAccount:
         self._overall_champion_mastery = None
         self._champion_mastery_levels = {}
         self._champion_mastery_points = {}
-        self._champion_mastery_tuples = []
         self._tiers = {}
         self._ranks = {}
         self._league_points = {}
         self._wins = {}
         self._losses = {}
-        self._ranked_games_tuples = []
         self._winrates = {}
         self._match_history = []
 
+        self._champion_mastery_tuples = []
+        self._ranked_games_tuples = []
         self._load_account_info()
         self.add_account_to_db()
         self.add_masteries_to_db()
