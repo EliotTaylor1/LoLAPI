@@ -11,6 +11,7 @@ class Match:
 
     def __init__(self, match_id: str, account_puuid: str):
         self.utils = Utils()
+
         self._account_puuid = account_puuid
         self._result_for_account = None
         self._match_id = match_id
@@ -23,6 +24,7 @@ class Match:
         self._team_gold = {}
         self._banned_champions = []
         self._picked_champions = []
+
         self._load_match_summary()
 
     def __str__(self):
@@ -43,14 +45,14 @@ class Match:
         self._set_duration()
         Match.logger.info("Setting match date")
         self._set_date()
+        Match.logger.info("Setting winning team")
+        self._set_winning_team()
         Match.logger.info("Setting participants")
         self._set_participants()
         Match.logger.info("Setting banned champs")
         self._set_banned_champions()
         Match.logger.info("Setting picked champs")
         self._set_picked_champions()
-        Match.logger.info("Setting winning team")
-        self._set_winning_team()
         Match.logger.info("Setting team gold")
         self._set_team_gold()
         Match.logger.info("Setting if account won or not")
@@ -72,8 +74,10 @@ class Match:
     def _set_participants(self):
         info = self._match_info.get("info")
         participants = info.get("participants")
+        metadata = self._match_info.get("metadata")
+        match_id = metadata.get("matchId")
         for participant_data in participants:
-            participant = Participant(participant_data)
+            participant = Participant(participant_data, match_id, self._winning_team)
             self._participants.append(participant)
 
     def _set_picked_champions(self):
@@ -109,7 +113,7 @@ class Match:
         account_team_id = None
         for participant in self._participants:
             if participant.get_puuid() == self._account_puuid:
-                account_team_id = participant.get_teamId()
+                account_team_id = participant.get_team_id()
         if account_team_id == self.get_winning_team():
             self._result_for_account = "WIN"
         else:
@@ -122,7 +126,7 @@ class Match:
 
     def _set_team_gold(self):
         for participant in self._participants:
-            team_id = participant.get_teamId()
+            team_id = participant.get_team_id()
             player_gold = participant.get_gold()
             if team_id in self._team_gold:
                 self._team_gold[team_id] += player_gold
@@ -204,7 +208,7 @@ class Match:
               f"Red Team Gold: {self.get_team_gold().get(200)}\n")
         print("=" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
 
-        sorted_participants = sorted(self._participants, key=lambda p: p.get_teamId())
+        sorted_participants = sorted(self._participants, key=lambda p: p.get_team_id())
 
         # Print header for participant stats
         print(f"{'Player':<{name_width}} | {'Team':<{team_width}} | {'Champion':<{champ_width}} | "

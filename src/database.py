@@ -34,17 +34,20 @@ class Database:
             );""",
             """ CREATE TABLE IF NOT EXISTS matches (
                       match_id INTEGER PRIMARY KEY,
-                      puuid TEXT,
-                      queue_id INTEGER,
                       duration REAL,
-                      winning_team INTEGER,
+                      match_date TEXT
+            );""",
+            """ CREATE TABLE IF NOT EXISTS participants (
+                      match_id INTEGER,
+                      puuid TEXT,
+                      win INTEGER, 
                       gold INTEGER,
                       kills INTEGER,
-                      deaths INTEGER,
+                      deaths INTEGER ,
                       assists INTEGER,
-                      picked_champion INTEGER,
-                      banned_champion INTEGER,
-                      match_date TEXT
+                      picked_champion TEXT,
+                      FOREIGN KEY (match_id)
+                        REFERENCES matches (match_id)
             );""",
             """ CREATE TABLE IF NOT EXISTS ranks (
                       puuid TEXT,
@@ -98,5 +101,21 @@ class Database:
         VALUES(?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()
         cur.execute(sql, ranked_data)
+        self.conn.commit()
+        return cur.lastrowid
+
+    def insert_matches(self, match_data: list):
+        sql = """ INSERT INTO matches(match_id,duration,match_date)
+        VALUES(?,?,?)"""
+        cur = self.conn.cursor()
+        cur.execute(sql, match_data)
+        self.conn.commit()
+        return cur.lastrowid
+
+    def insert_participant(self, participant_data: tuple):
+        sql = """ INSERT INTO participants(match_id,puuid,win,gold,kills,deaths,assists,picked_champion)
+        VALUES(?,?,?,?,?,?,?,?)"""
+        cur = self.conn.cursor()
+        cur.execute(sql, participant_data)
         self.conn.commit()
         return cur.lastrowid
