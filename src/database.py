@@ -80,7 +80,7 @@ class Database:
         except sqlite3.Error as e:
             print(e)
 
-    def insert_account(self, account_data: list):
+    def insert_account(self, account_data: tuple):
         sql = """ INSERT INTO accounts(puuid,summoner_id,account_id,game_name,tag,level,last_activity,last_match,last_refresh)
         VALUES(?,?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()

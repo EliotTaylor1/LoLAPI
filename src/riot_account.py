@@ -35,7 +35,8 @@ class RiotAccount:
         self._winrates = {}
         self._match_history = []
         self._champion_mastery_tuples = []
-        self._ranked_games_tuples = []
+        self._ranked_stats_tuples = []
+        self._match_tuples = []
 
         self._load_account_info()
 
@@ -98,7 +99,7 @@ class RiotAccount:
                 self._wins["Solo"] = queue["wins"]
                 self._losses["Solo"] = queue["losses"]
                 solo_tuple = (self._puuid, queue["queueType"], self._tiers.get("Solo"), self._ranks.get("Solo"), self._league_points.get("Solo"), self._wins.get("Solo"), self._losses.get("Solo"), datetime.now())
-                self._ranked_games_tuples.append(solo_tuple)
+                self._ranked_stats_tuples.append(solo_tuple)
             elif queue["queueType"] == "RANKED_FLEX_SR":
                 self._tiers["Flex"] = queue["tier"]
                 self._ranks["Flex"] = queue["rank"]
@@ -106,7 +107,7 @@ class RiotAccount:
                 self._wins["Flex"] = queue["wins"]
                 self._losses["Flex"] = queue["losses"]
                 flex_tuple = (self._puuid, queue["queueType"], self._tiers.get("Flex"), self._ranks.get("Flex"), self._league_points.get("Flex"), self._wins.get("Flex"), self._losses.get("Flex"), datetime.now())
-                self._ranked_games_tuples.append(flex_tuple)
+                self._ranked_stats_tuples.append(flex_tuple)
             elif queue["queueType"] == "CHERRY":
                 self._league_points["Arena"] = queue["leaguePoints"]
                 self._wins["Arena"] = queue["wins"]
@@ -185,8 +186,8 @@ class RiotAccount:
         last_match = info.get("gameCreation") / 1000  # format POSIX date correctly
         self._date_of_last_match = datetime.fromtimestamp(last_match)
 
-    def get_account_as_list(self) -> list:
-        account = [self._puuid,
+    def get_account_as_list(self) -> tuple:
+        account = (self._puuid,
                    self._summoner_id,
                    self._account_id,
                    self._game_name,
@@ -194,7 +195,7 @@ class RiotAccount:
                    self._account_level,
                    self._date_of_last_activity,
                    self._date_of_last_match,
-                   datetime.now()]
+                   datetime.now())
         return account
 
     def add_account_to_db(self):
@@ -225,11 +226,11 @@ class RiotAccount:
             print(e)
 
     def add_ranks_to_db(self):
-        RiotAccount.logger.info("Adding new masteries record")
+        RiotAccount.logger.info("Adding new rank records")
         try:
             with sqlite3.connect("Database.db"):
                 if not self.puuid_already_in_db("ranks"):
-                    for rank_tuple in self._ranked_games_tuples:
+                    for rank_tuple in self._ranked_stats_tuples:
                         RiotAccount.logger.info(f"Ranked tuple data: {rank_tuple}")
                         self.database.insert_ranks(rank_tuple)
                 else:
@@ -303,8 +304,8 @@ class RiotAccount:
                        "losses=?,"
                        "last_refresh=?"
                        "WHERE puuid=?")
-                for rank_tuple in self._ranked_games_tuples:
-                    cur.execute(sql, (rank_tuple[1],rank_tuple[2],rank_tuple[3],rank_tuple[4],rank_tuple[5],rank_tuple[6], datetime.now()))
+                for rank_tuple in self._ranked_stats_tuples:
+                    cur.execute(sql, (rank_tuple[1], rank_tuple[2], rank_tuple[3], rank_tuple[4], rank_tuple[5], rank_tuple[6], datetime.now()))
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
