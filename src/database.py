@@ -33,12 +33,12 @@ class Database:
                       last_refresh TEXT
             );""",
             """ CREATE TABLE IF NOT EXISTS matches (
-                      match_id INTEGER PRIMARY KEY,
-                      duration REAL,
+                      match_id TEXT PRIMARY KEY,
+                      duration INTEGER,
                       match_date TEXT
             );""",
             """ CREATE TABLE IF NOT EXISTS participants (
-                      match_id INTEGER,
+                      match_id TEXT,
                       puuid TEXT,
                       win INTEGER, 
                       gold INTEGER,
@@ -104,7 +104,7 @@ class Database:
         self.conn.commit()
         return cur.lastrowid
 
-    def insert_matches(self, match_data: list):
+    def insert_match(self, match_data: tuple):
         sql = """ INSERT INTO matches(match_id,duration,match_date)
         VALUES(?,?,?)"""
         cur = self.conn.cursor()

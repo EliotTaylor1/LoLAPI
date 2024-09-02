@@ -39,10 +39,10 @@ class Participant:
             self._team_colour = "Red"
 
     def add_participant_to_db(self):
-        Participant.logger.info("Adding new participant record")
         try:
             with sqlite3.connect("Database.db"):
                 if not self.match_id_and_participant_already_in_db():
+                    Participant.logger.info("Adding new participant record")
                     participant = self.get_participant_as_tuple()
                     self.database.insert_participant(participant)
                 else:

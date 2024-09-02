@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
+import sqlite3
 
+from src.database import Database
 from src.participant import Participant
 from src.champion import Champion
 from src.utils import Utils
@@ -11,6 +13,7 @@ class Match:
 
     def __init__(self, match_id: str, account_puuid: str):
         self.utils = Utils()
+        self.database = Database()
 
         self._account_puuid = account_puuid
         self._result_for_account = None
@@ -26,6 +29,7 @@ class Match:
         self._picked_champions = []
 
         self._load_match_summary()
+        self.add_match_to_db()
 
     def __str__(self):
         return (f"{self._result_for_account}\n"
@@ -59,9 +63,41 @@ class Match:
         self._set_result_for_account()
         Match.logger.info("Match info set")
 
+    def add_match_to_db(self):
+        try:
+            with sqlite3.connect("Database.db"):
+                if not self.match_id_already_in_db():
+                    Match.logger.info("Adding new Match record")
+                    match_tuple = self.set_match_tuple()
+                    Match.logger.info(f"Match tuple data: {match_tuple}")
+                    self.database.insert_match(match_tuple)
+                else:
+                    Match.logger.info("Match already in DB")
+        except sqlite3.Error as e:
+            print(e)
+
+    def match_id_already_in_db(self) -> bool:
+        Match.logger.info(f"Checking if Match ID already in table")
+        try:
+            with sqlite3.connect("Database.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"select * from matches")
+                rows = cur.fetchall()
+                for row in rows:
+                    Match.logger.info(f"Iteration data: {row[0]} {self._match_id}")
+                    if row[0] == self._match_id:
+                        return True
+                    else:
+                        return False
+        except sqlite3.Error as e:
+            print(e)
+
     def _retrieve_match_info(self):
         endpoint = f"/lol/match/v5/matches/{self._match_id}"
         return self.utils.make_request_region(endpoint)
+
+    def set_match_tuple(self) -> tuple:
+        return self._match_id, self._duration, self._match_date
 
     def _set_game_mode(self):
         info = self._match_info.get("info")
