@@ -72,7 +72,7 @@ class Match:
                     Match.logger.info(f"Match tuple data: {match_tuple}")
                     self.database.insert_match(match_tuple)
                 else:
-                    Match.logger.info("Match already in DB")
+                    Match.logger.info("Match ID already in Matches table")
         except sqlite3.Error as e:
             print(e)
 
@@ -84,7 +84,6 @@ class Match:
                 cur.execute(f"select * from matches")
                 rows = cur.fetchall()
                 for row in rows:
-                    Match.logger.info(f"Iteration data: {row[0]} {self._match_id}")
                     if row[0] == self._match_id:
                         return True
                     else:

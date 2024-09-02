@@ -46,7 +46,7 @@ class Participant:
                     participant = self.get_participant_as_tuple()
                     self.database.insert_participant(participant)
                 else:
-                    Participant.logger.info("Participant already in table for this match")
+                    Participant.logger.info("Participant already in Participants table for this match")
         except sqlite3.Error as e:
             print(e)
 
