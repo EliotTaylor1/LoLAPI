@@ -244,13 +244,12 @@ class RiotAccount:
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute(f"select * from {table}")
-                rows = cur.fetchall()
-                for row in rows:
-                    if row[0] == self._puuid:
-                        return True
-                    else:
-                        return False
+                cur.execute(f"select * from {table} where puuid=?", (self._puuid,))
+                result = cur.fetchall()
+                if result:
+                    return True
+                else:
+                    return False
         except sqlite3.Error as e:
             print(e)
 

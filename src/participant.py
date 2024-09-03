@@ -60,13 +60,12 @@ class Participant:
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute(f"select * from participants")
-                rows = cur.fetchall()
-                for row in rows:
-                    if row[0] == self._match_id and row[1] == self._puuid:
-                        return True
-                    else:
-                        return False
+                cur.execute(f"select * from participants where match_id=? and puuid=?", (self._match_id, self._puuid))
+                result = cur.fetchall()
+                if result:
+                    return True
+                else:
+                    return False
         except sqlite3.Error as e:
             print(e)
 

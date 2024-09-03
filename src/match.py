@@ -81,13 +81,12 @@ class Match:
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute(f"select * from matches")
-                rows = cur.fetchall()
-                for row in rows:
-                    if row[0] == self._match_id:
-                        return True
-                    else:
-                        return False
+                cur.execute(f"select * from matches where match_id=?", (self._match_id,))
+                result = cur.fetchall()
+                if result:
+                    return True
+                else:
+                    return False
         except sqlite3.Error as e:
             print(e)
 
