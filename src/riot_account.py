@@ -186,7 +186,7 @@ class RiotAccount:
         last_match = info.get("gameCreation") / 1000  # format POSIX date correctly
         self._date_of_last_match = datetime.fromtimestamp(last_match)
 
-    def get_account_as_list(self) -> tuple:
+    def get_account_as_tuple(self) -> tuple:
         account = (self._puuid,
                    self._summoner_id,
                    self._account_id,
@@ -203,7 +203,7 @@ class RiotAccount:
             with sqlite3.connect("Database.db"):
                 if not self.puuid_already_in_db("accounts"):
                     RiotAccount.logger.info("Adding new account record")
-                    account = self.get_account_as_list()
+                    account = self.get_account_as_tuple()
                     self.database.insert_account(account)
                 else:
                     RiotAccount.logger.info("PUUID already in Accounts table, refreshing account record")
