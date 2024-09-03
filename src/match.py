@@ -17,7 +17,7 @@ class Match:
 
         self._account_puuid = account_puuid
         self._result_for_account = None
-        self._match_id = match_id
+        self.match_id = match_id
         self._match_info = None
         self._match_date = None
         self._game_mode = None
@@ -33,7 +33,7 @@ class Match:
 
     def __str__(self):
         return (f"{self._result_for_account}\n"
-                f"Match ID: {self._match_id}\n"
+                f"Match ID: {self.match_id}\n"
                 f"Match Date: {self._match_date}\n"
                 f"Gamemode: {self.print_game_mode()}\n"
                 f"Winning team: {self.print_winning_team()} in {self.print_duration()}\n"
@@ -81,7 +81,7 @@ class Match:
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute(f"select * from matches where match_id=?", (self._match_id,))
+                cur.execute(f"select * from matches where match_id=?", (self.match_id,))
                 result = cur.fetchall()
                 if result:
                     return True
@@ -91,11 +91,11 @@ class Match:
             print(e)
 
     def _retrieve_match_info(self):
-        endpoint = f"/lol/match/v5/matches/{self._match_id}"
+        endpoint = f"/lol/match/v5/matches/{self.match_id}"
         return self.utils.make_request_region(endpoint)
 
     def set_match_tuple(self) -> tuple:
-        return self._match_id, self._duration, self._match_date
+        return self.match_id, self._duration, self._match_date
 
     def _set_game_mode(self):
         info = self._match_info.get("info")

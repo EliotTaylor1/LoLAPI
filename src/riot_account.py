@@ -98,7 +98,9 @@ class RiotAccount:
                 self._league_points["Solo"] = queue["leaguePoints"]
                 self._wins["Solo"] = queue["wins"]
                 self._losses["Solo"] = queue["losses"]
-                solo_tuple = (self._puuid, queue["queueType"], self._tiers.get("Solo"), self._ranks.get("Solo"), self._league_points.get("Solo"), self._wins.get("Solo"), self._losses.get("Solo"), datetime.now())
+                solo_tuple = (self._puuid, queue["queueType"], self._tiers.get("Solo"), self._ranks.get("Solo"),
+                              self._league_points.get("Solo"), self._wins.get("Solo"), self._losses.get("Solo"),
+                              datetime.now())
                 self._ranked_stats_tuples.append(solo_tuple)
             elif queue["queueType"] == "RANKED_FLEX_SR":
                 self._tiers["Flex"] = queue["tier"]
@@ -106,7 +108,9 @@ class RiotAccount:
                 self._league_points["Flex"] = queue["leaguePoints"]
                 self._wins["Flex"] = queue["wins"]
                 self._losses["Flex"] = queue["losses"]
-                flex_tuple = (self._puuid, queue["queueType"], self._tiers.get("Flex"), self._ranks.get("Flex"), self._league_points.get("Flex"), self._wins.get("Flex"), self._losses.get("Flex"), datetime.now())
+                flex_tuple = (self._puuid, queue["queueType"], self._tiers.get("Flex"), self._ranks.get("Flex"),
+                              self._league_points.get("Flex"), self._wins.get("Flex"), self._losses.get("Flex"),
+                              datetime.now())
                 self._ranked_stats_tuples.append(flex_tuple)
             elif queue["queueType"] == "CHERRY":
                 self._league_points["Arena"] = queue["leaguePoints"]
@@ -163,16 +167,19 @@ class RiotAccount:
             self._champion_mastery_levels[champion_name.get_name()] = entry["championLevel"]
             self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
             champion_mastery_tuple = (
-                self._puuid, champion_id, champion_name.get_name(), entry["championLevel"], entry["championPoints"], datetime.now())
+                self._puuid, champion_id, champion_name.get_name(), entry["championLevel"], entry["championPoints"],
+                datetime.now())
             self._champion_mastery_tuples.append(champion_mastery_tuple)
 
     def retrieve_match_history(self, num_of_matches):
         print("Retrieving match history...")
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count={num_of_matches}"
         match_ids = self.utils.make_request_region(endpoint)
+        existing_match_ids = {match.match_id for match in self._match_history}
         for match_id in match_ids:
-            match = Match(match_id, self._puuid)
-            self._match_history.append(match)
+            if match_id not in existing_match_ids:
+                match = Match(match_id, self._puuid)
+                self._match_history.append(match)
 
     def _set_date_of_last_match(self):
         endpoint = f"/lol/match/v5/matches/by-puuid/{self._puuid}/ids?start=0&count=1"
@@ -303,7 +310,9 @@ class RiotAccount:
                        "last_refresh=?"
                        "WHERE puuid=?")
                 for rank_tuple in self._ranked_stats_tuples:
-                    cur.execute(sql, (rank_tuple[1], rank_tuple[2], rank_tuple[3], rank_tuple[4], rank_tuple[5], rank_tuple[6], datetime.now(), self._puuid))
+                    cur.execute(sql, (
+                        rank_tuple[1], rank_tuple[2], rank_tuple[3], rank_tuple[4], rank_tuple[5], rank_tuple[6],
+                        datetime.now(), self._puuid))
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
