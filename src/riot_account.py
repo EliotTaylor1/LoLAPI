@@ -223,9 +223,8 @@ class RiotAccount:
             with sqlite3.connect("Database.db"):
                 if not self.puuid_already_in_db("masteries"):
                     RiotAccount.logger.info("Adding new mastery records")
-                    for mastery_tuple in self._champion_mastery_tuples:
-                        RiotAccount.logger.info(f"Mastery tuple data: {mastery_tuple}")
-                        self.database.insert_masteries(mastery_tuple)
+                    RiotAccount.logger.info(f"Mastery tuple data: {self._champion_mastery_tuples}")
+                    self.database.insert_masteries(self._champion_mastery_tuples)
                 else:
                     RiotAccount.logger.info("PUUID already in Masteries table, refreshing mastery records")
                     self.refresh_masteries_record()
@@ -237,9 +236,8 @@ class RiotAccount:
             with sqlite3.connect("Database.db"):
                 if not self.puuid_already_in_db("ranks"):
                     RiotAccount.logger.info("Adding new rank records")
-                    for rank_tuple in self._ranked_stats_tuples:
-                        RiotAccount.logger.info(f"Ranked tuple data: {rank_tuple}")
-                        self.database.insert_ranks(rank_tuple)
+                    RiotAccount.logger.info(f"Ranked tuple data: {self._ranked_stats_tuples}")
+                    self.database.insert_ranks(self._ranked_stats_tuples)
                 else:
                     RiotAccount.logger.info("PUUID already in Ranks table, refreshing ranked records")
                     self.refresh_ranked_record()

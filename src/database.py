@@ -92,7 +92,7 @@ class Database:
         sql = """ INSERT INTO masteries(puuid,champion_id,champion_name,level,points,last_refresh)
         VALUES(?,?,?,?,?,?)"""
         cur = self.conn.cursor()
-        cur.execute(sql, mastery_data)
+        cur.executemany(sql, mastery_data)
         self.conn.commit()
         return cur.lastrowid
 
@@ -100,7 +100,7 @@ class Database:
         sql = """ INSERT INTO ranks(puuid,queue_name,tier,rank,league_points,wins,losses,last_refresh)
         VALUES(?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()
-        cur.execute(sql, ranked_data)
+        cur.executemany(sql, ranked_data)
         self.conn.commit()
         return cur.lastrowid
 
