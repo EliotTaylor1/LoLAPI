@@ -34,6 +34,7 @@ class Database:
             );""",
             """ CREATE TABLE IF NOT EXISTS matches (
                       match_id TEXT PRIMARY KEY,
+                      game_mode INTEGER,
                       duration INTEGER,
                       match_date TEXT
             );""",
@@ -105,8 +106,8 @@ class Database:
         return cur.lastrowid
 
     def insert_match(self, match_data: tuple):
-        sql = """ INSERT INTO matches(match_id,duration,match_date)
-        VALUES(?,?,?)"""
+        sql = """ INSERT INTO matches(match_id,game_mode,duration,match_date)
+        VALUES(?,?,?,?)"""
         cur = self.conn.cursor()
         cur.execute(sql, match_data)
         self.conn.commit()

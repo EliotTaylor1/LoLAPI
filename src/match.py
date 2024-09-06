@@ -95,7 +95,7 @@ class Match:
         return self.utils.make_request_region(endpoint)
 
     def set_match_tuple(self) -> tuple:
-        return self.match_id, self._duration, self._match_date
+        return self.match_id, self._game_mode, self._duration, self._match_date
 
     def _set_game_mode(self):
         info = self._match_info.get("info")
@@ -227,6 +227,8 @@ class Match:
             return "Arena"
         elif self._game_mode == 1710:
             return "Arena"
+        else:
+            return "Undefined"
 
     def print_detailed_match_stats(self):
         name_width = 30
