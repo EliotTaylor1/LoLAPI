@@ -35,7 +35,7 @@ class Match:
         return (f"{self._result_for_account}\n"
                 f"Match ID: {self.match_id}\n"
                 f"Match Date: {self._match_date}\n"
-                f"Gamemode: {self.print_game_mode()}\n"
+                f"Gamemode: {self.get_game_mode_as_string()}\n"
                 f"Winning team: {self.print_winning_team()} in {self.print_duration()}\n"
                 f"Players: {self.print_players()}\n"
                 f"Picks: {', '.join(self._picked_champions)}\n"
@@ -95,7 +95,7 @@ class Match:
         return self.utils.make_request_region(endpoint)
 
     def set_match_tuple(self) -> tuple:
-        return self.match_id, self._game_mode, self._duration, self._match_date
+        return self.match_id, self._game_mode, self.get_game_mode_as_string(), self._duration, self._match_date
 
     def _set_game_mode(self):
         info = self._match_info.get("info")
@@ -202,7 +202,7 @@ class Match:
         minutes, seconds = divmod(total_seconds, 60)
         return f"{minutes}M {seconds}S"
 
-    def print_game_mode(self):
+    def get_game_mode_as_string(self):
         if self._game_mode == 420:
             return "Ranked Solo"
         elif self._game_mode == 430:
