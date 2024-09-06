@@ -14,8 +14,7 @@ LoLAPI-CLI is a CLI tool written in Python that allows you to look-up stats for 
     *The script will create a venv in the directory you're running in*
 ## Roadmap
 1. Remove need for region and server setting in config.json
-2. Database support
-3. UI?
+2. UI?
 
 ## FAQ
 ### Q: Where do I get a Riot API key?
