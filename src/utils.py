@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import requests
+from dotenv import load_dotenv
 
 
 def load_champion_data():
@@ -23,13 +24,10 @@ class Utils:
             self.region = region
             self.server = server
         else:
-            config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
-            config_path = os.path.abspath(config_path)
-            with open(config_path) as f:
-                config = json.load(f)
-            self.api_key = config.get("api_key")
-            self.region = config.get("region")
-            self.server = config.get("server")
+            load_dotenv()
+            self.api_key = os.getenv("API_KEY")
+            self.server = os.getenv("SERVER")
+            self.region = os.getenv("REGION")
 
     def make_request_region(self, endpoint: str):
         url = f"https://{self.region}.api.riotgames.com{endpoint}"
