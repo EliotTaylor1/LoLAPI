@@ -52,7 +52,16 @@ class Participant:
 
     def get_participant_as_tuple(self) -> tuple:
         participant = (
-            self._match_id, self._puuid, self._won_game, self._gold, self._kills, self._deaths, self._assists, self._champion)
+            self._match_id,
+            self._puuid,
+            self._won_game,
+            self._team_colour,
+            self._gold,
+            self._kills,
+            self._deaths,
+            self._assists,
+            self._champion
+        )
         return participant
 
     def match_id_and_participant_already_in_db(self) -> bool:

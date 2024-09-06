@@ -43,6 +43,7 @@ class Database:
                       match_id TEXT,
                       puuid TEXT,
                       win INTEGER, 
+                      team TEXT,
                       gold INTEGER,
                       kills INTEGER,
                       deaths INTEGER ,
@@ -115,8 +116,8 @@ class Database:
         return cur.lastrowid
 
     def insert_participant(self, participant_data: tuple):
-        sql = """ INSERT INTO participants(match_id,puuid,win,gold,kills,deaths,assists,picked_champion)
-        VALUES(?,?,?,?,?,?,?,?)"""
+        sql = """ INSERT INTO participants(match_id,puuid,win,team,gold,kills,deaths,assists,picked_champion)
+        VALUES(?,?,?,?,?,?,?,?,?)"""
         cur = self.conn.cursor()
         cur.execute(sql, participant_data)
         self.conn.commit()
