@@ -36,8 +36,8 @@ class Match:
                 f"Match ID: {self.match_id}\n"
                 f"Match Date: {self._match_date}\n"
                 f"Gamemode: {self.get_game_mode_as_string()}\n"
-                f"Winning team: {self.print_winning_team()} in {self.print_duration()}\n"
-                f"Players: {self.print_players()}\n"
+                f"Winning team: {self.get_winning_team_colour_as_string()} in {self.get_duration_as_string()}\n"
+                f"Players: {self.get_participant_names_as_string()}\n"
                 f"Picks: {', '.join(self._picked_champions)}\n"
                 f"Bans: {', '.join(map(str, self._banned_champions))}")
 
@@ -81,7 +81,7 @@ class Match:
         try:
             with sqlite3.connect("Database.db") as conn:
                 cur = conn.cursor()
-                cur.execute(f"select * from matches where match_id=?", (self.match_id,))
+                cur.execute(f"SELECT match_id FROM matches WHERE match_id=?", (self.match_id,))
                 result = cur.fetchall()
                 if result:
                     return True
@@ -98,25 +98,20 @@ class Match:
         return self.match_id, self._game_mode, self.get_game_mode_as_string(), self._duration, self._match_date
 
     def _set_game_mode(self):
-        info = self._match_info.get("info")
-        self._game_mode = info.get("queueId")
+        self._game_mode = self._match_info.get("info").get("queueId")
 
     def _set_duration(self):
-        info = self._match_info.get("info")
-        self._duration = info.get("gameDuration")
+        self._duration = self._match_info.get("info").get("gameDuration")
 
     def _set_participants(self):
-        info = self._match_info.get("info")
-        participants = info.get("participants")
-        metadata = self._match_info.get("metadata")
-        match_id = metadata.get("matchId")
+        participants = self._match_info.get("info").get("participants")
+        match_id = self._match_info.get("metadata").get("matchId")
         for participant_data in participants:
             participant = Participant(participant_data, match_id, self._winning_team)
             self._participants.append(participant)
 
     def _set_picked_champions(self):
-        info = self._match_info.get("info")
-        participants = info.get("participants")
+        participants = self._match_info.get("info").get("participants")
         for participant in participants:
             pick = participant.get("championName")
             self._picked_champions.append(pick)
@@ -154,9 +149,8 @@ class Match:
             self._result_for_account = "LOSS"
 
     def _set_date(self):
-        info = self._match_info.get("info")
-        time = info.get("gameCreation") / 1000  # format posix date correctly
-        self._match_date = datetime.fromtimestamp(time)
+        timestamp = self._match_info.get("info").get("gameCreation") / 1000  # format posix date correctly
+        self._match_date = datetime.fromtimestamp(timestamp)
 
     def _set_team_gold(self):
         for participant in self._participants:
@@ -185,19 +179,16 @@ class Match:
     def get_match_info(self):
         return self._match_info
 
-    def print_winning_team(self):
-        if self._winning_team == 100:
-            return "Blue"
-        else:
-            return "Red"
+    def get_winning_team_colour_as_string(self):
+        return "Blue" if self._winning_team == 100 else "Red"
 
-    def print_players(self):
+    def get_participant_names_as_string(self):
         players = []
         for participant in self._participants:
             players.append(participant.get_full_name())
         return ', '.join(players)
 
-    def print_duration(self):
+    def get_duration_as_string(self):
         total_seconds = self._duration
         minutes, seconds = divmod(total_seconds, 60)
         return f"{minutes}M {seconds}S"
@@ -239,7 +230,7 @@ class Match:
         gold_width = 10
 
         print(f"Match Date: {self._match_date}\n"
-              f"Winning Team: {self.print_winning_team()} || Game Length: {self.print_duration()}\n"
+              f"Winning Team: {self.get_winning_team_colour_as_string()} || Game Length: {self.get_duration_as_string()}\n"
               f"Blue Team Gold: {self.get_team_gold().get(100)}\n"
               f"Red Team Gold: {self.get_team_gold().get(200)}\n")
         print("=" * (name_width + team_width + champ_width + kda_width + role_width + gold_width + 15))
