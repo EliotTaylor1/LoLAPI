@@ -167,8 +167,13 @@ class RiotAccount:
             self._champion_mastery_levels[champion_name.get_name()] = entry["championLevel"]
             self._champion_mastery_points[champion_name.get_name()] = entry["championPoints"]
             champion_mastery_tuple = (
-                self._puuid, champion_id, champion_name.get_name(), entry["championLevel"], entry["championPoints"],
-                datetime.now())
+                self._puuid,
+                champion_id,
+                champion_name.get_name(),
+                entry["championLevel"],
+                entry["championPoints"],
+                datetime.now()
+            )
             self._champion_mastery_tuples.append(champion_mastery_tuple)
 
     def retrieve_match_history(self, num_of_matches):
@@ -278,40 +283,33 @@ class RiotAccount:
             print(e)
 
     def refresh_masteries_record(self):
-        RiotAccount.logger.info("Refreshing mastery records")
+        RiotAccount.logger.info(f"Refreshing mastery records for {self._puuid}")
         try:
             with sqlite3.connect("Database.db") as conn:
+                RiotAccount.logger.info(f"Deleting existing mastery records for {self._puuid}")
                 cur = conn.cursor()
-                sql = ("UPDATE masteries "
-                       "SET level=?,"
-                       "points=?,"
-                       "last_refresh=?"
-                       "WHERE puuid=?")
-                for mastery_tuple in self._champion_mastery_tuples:
-                    cur.execute(sql, (mastery_tuple[2], mastery_tuple[3], datetime.now(), self._puuid))
+                delete_sql = "DELETE FROM masteries WHERE puuid=?"
+                cur.execute(delete_sql,(self._puuid,))
+                conn.commit()
+
+                RiotAccount.logger.info("Inserting updated mastery records")
+                self.database.insert_masteries(self._champion_mastery_tuples)
                 conn.commit()
         except sqlite3.Error as e:
             print(e)
 
     def refresh_ranked_record(self):
-        RiotAccount.logger.info("Refreshing ranked records")
+        RiotAccount.logger.info(f"Refreshing ranked records for {self._puuid}")
         try:
             with sqlite3.connect("Database.db") as conn:
+                RiotAccount.logger.info(f"Deleting existing rank records for {self._puuid}")
                 cur = conn.cursor()
-                sql = ("UPDATE ranks "
-                       "SET queue_name=?,"
-                       "tier=?,"
-                       "rank=?,"
-                       "league_points=?,"
-                       "wins=?,"
-                       "losses=?,"
-                       "last_refresh=?"
-                       "WHERE puuid=?")
-                for rank_tuple in self._ranked_stats_tuples:
-                    cur.execute(sql, (
-                        rank_tuple[1], rank_tuple[2], rank_tuple[3], rank_tuple[4], rank_tuple[5], rank_tuple[6],
-                        datetime.now(), self._puuid))
+                delete_sql = "DELETE FROM ranks WHERE puuid=?"
+                cur.execute(delete_sql, (self._puuid,))
                 conn.commit()
+
+                RiotAccount.logger.info("Inserting updated rank records")
+                self.database.insert_ranks(self._ranked_stats_tuples)
         except sqlite3.Error as e:
             print(e)
 
