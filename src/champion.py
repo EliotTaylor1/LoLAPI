@@ -19,6 +19,7 @@ class Champion:
                 self._champion_name = champion_data.get("id")
                 return
         else:
+            self._champion_name = "None"
             Champion.logger.info(f"{data.get('key')} not found in data.")
 
     def get_name(self):

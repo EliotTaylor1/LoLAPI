@@ -39,7 +39,7 @@ class Match:
                 f"Winning team: {self.get_winning_team_colour_as_string()} in {self.get_duration_as_string()}\n"
                 f"Players: {self.get_participant_names_as_string()}\n"
                 f"Picks: {', '.join(self._picked_champions)}\n"
-                f"Bans: {', '.join(map(str, self._banned_champions))}")
+                f"Bans: {', '.join(self._banned_champions)}")
 
     def _load_match_summary(self):
         self._match_info = self._retrieve_match_info()
