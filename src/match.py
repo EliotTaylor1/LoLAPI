@@ -95,7 +95,7 @@ class Match:
         return self.utils.make_request_region(endpoint)
 
     def set_match_tuple(self) -> tuple:
-        return self.match_id, self._game_mode, self.get_game_mode_as_string(), self._duration, self._match_date
+        return self.match_id, self._game_mode, self.get_game_mode_as_string(), self._duration, self.get_winning_team_colour_as_string(), self._match_date
 
     def _set_game_mode(self):
         self._game_mode = self._match_info.get("info").get("queueId")
