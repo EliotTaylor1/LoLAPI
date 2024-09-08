@@ -194,9 +194,8 @@ class RiotAccount:
         match_id = match_ids[0]
         match_info_endpoint = f"/lol/match/v5/matches/{match_id}"
         match_info = self.utils.make_request_region(match_info_endpoint)
-        info = match_info.get("info")
-        last_match = info.get("gameCreation") / 1000  # format POSIX date correctly
-        self._date_of_last_match = datetime.fromtimestamp(last_match)
+        last_match_timestamp = match_info.get("info").get("gameCreation") / 1000  # format POSIX date correctly
+        self._date_of_last_match = datetime.fromtimestamp(last_match_timestamp)
 
     def get_account_as_tuple(self) -> tuple:
         account = (self._puuid,
